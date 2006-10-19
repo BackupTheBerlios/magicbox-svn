@@ -1,0 +1,11 @@
+--- kernel-2.4-2.4.32/init/do_mounts.c.orig	2006-08-11 01:06:51.000000000 +0200
++++ kernel-2.4-2.4.32/init/do_mounts.c	2006-08-11 01:07:34.000000000 +0200
+@@ -921,7 +921,7 @@
+ 
+ 	create_dev("/dev/root", ROOT_DEV, NULL);
+ 	if (mount_initrd) {
+-		if (initrd_load() && ROOT_DEV != MKDEV(RAMDISK_MAJOR, 0)) {
++		if (initrd_load()) {
+ 			handle_initrd();
+ 			goto out;
+ 		}

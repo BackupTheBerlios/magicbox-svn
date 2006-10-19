@@ -1,0 +1,20 @@
+--- nfs-utils-1.0.7/config.mk.in~	2004-10-19 02:22:53.000000000 +0200
++++ nfs-utils-1.0.7/config.mk.in	2006-04-30 23:25:02.000000000 +0200
+@@ -55,7 +55,7 @@
+ LN_S		= ln -sf
+ RANLIB		= @RANLIB@
+ INDENT		= indent
+-RPCGEN		= $(TOP)bin/rpcgen
++RPCGEN		= rpcgen
+ GETKVER		= $(TOP)tools/getkversion
+ INSTALL		= install
+ MAN2PS		= groff -Tps -man
+@@ -71,7 +71,7 @@
+ CC		= @CC@
+ CFLAGS		= @CFLAGS@ $(ALL-CFLAGS)
+ CC_FOR_BUILD	= @CC_FOR_BUILD@
+-CFLAGS_FOR_BUILD= -O2 $(ALL-CFLAGS)
++CFLAGS_FOR_BUILD= -Os $(ALL-CFLAGS)
+ 
+ ifdef BUILD
+ CC		= $(CC_FOR_BUILD)

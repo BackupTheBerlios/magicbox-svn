@@ -1,0 +1,162 @@
+diff -Nru iproute2-2.6.9/Config iproute2-2.6.9.patched/Config
+--- iproute2-2.6.9/Config	1970-01-01 01:00:00.000000000 +0100
++++ iproute2-2.6.9.patched/Config	2006-04-29 01:00:00.000000000 +0200
+@@ -0,0 +1,3 @@
++# Generated config based on --help
++TC_CONFIG_ACTION_GACT=y
++TC_CONFIG_ACTION_PROB=y
+diff -Nru iproute2-2.6.9/Makefile iproute2-2.6.9.patched/Makefile
+--- iproute2-2.6.9/Makefile	2004-10-19 22:49:02.000000000 +0200
++++ iproute2-2.6.9.patched/Makefile	2006-04-29 01:52:48.000000000 +0200
+@@ -1,5 +1,5 @@
+ DESTDIR=
+-SBINDIR=/usr/sbin
++SBINDIR=/sbin
+ CONFDIR=/etc/iproute2
+ DOCDIR=/usr/share/doc/iproute2
+ MANDIR=/usr/share/man
+@@ -20,7 +20,7 @@
+ ADDLIB+=ipx_ntop.o ipx_pton.o
+ 
+ CC = gcc
+-CCOPTS = -D_GNU_SOURCE -O2 -Wstrict-prototypes -Wall -g
++CCOPTS = -D_GNU_SOURCE -Os -Wstrict-prototypes -Wall
+ CFLAGS = $(CCOPTS) -I../include $(DEFINES)
+ 
+ LDLIBS += -L../lib -lnetlink -lutil
+diff -Nru iproute2-2.6.9/ip/Makefile iproute2-2.6.9.patched/ip/Makefile
+--- iproute2-2.6.9/ip/Makefile	2004-10-19 22:49:02.000000000 +0200
++++ iproute2-2.6.9.patched/ip/Makefile	2006-04-29 01:00:33.000000000 +0200
+@@ -6,7 +6,7 @@
+ RTMONOBJ=rtmon.o
+ 
+ ALLOBJ=$(IPOBJ) $(RTMONOBJ)
+-TARGETS=ip rtmon ifcfg rtpr
++TARGETS=ip
+ 
+ all: $(TARGETS)
+ 
+@@ -15,7 +15,7 @@
+ rtmon: $(RTMONOBJ) $(LIBNETLINK)
+ 
+ install: all
+-	install -m 0755 -s $(TARGETS) $(DESTDIR)$(SBINDIR)
++	install -m 0755 $(TARGETS) $(DESTDIR)$(SBINDIR)
+ 	install -m 0755 routel routef $(DESTDIR)$(SBINDIR)
+ 
+ clean:
+diff -Nru iproute2-2.6.9/ip/ipxfrm.c iproute2-2.6.9.patched/ip/ipxfrm.c
+--- iproute2-2.6.9/ip/ipxfrm.c	2004-10-19 22:49:02.000000000 +0200
++++ iproute2-2.6.9.patched/ip/ipxfrm.c	2006-04-29 01:00:00.000000000 +0200
+@@ -392,7 +392,8 @@
+ 	switch (sel->proto) {
+ 	case IPPROTO_TCP:
+ 	case IPPROTO_UDP:
+-	case IPPROTO_SCTP:
++	  // uClibc has no support for SCTP. --kl
++	  //	case IPPROTO_SCTP:
+ 	default: /* XXX */
+ 		if (sel->sport_mask)
+ 			fprintf(fp, "sport %u ", ntohs(sel->sport));
+@@ -787,7 +788,7 @@
+ 		switch (sel->proto) {
+ 		case IPPROTO_TCP:
+ 		case IPPROTO_UDP:
+-		case IPPROTO_SCTP:
++		  //		case IPPROTO_SCTP:
+ 			break;
+ 		default:
+ 			fprintf(stderr, "\"sport\" and \"dport\" are invalid with proto=%s\n", strxf_proto(sel->proto));
+diff -Nru iproute2-2.6.9/ip/rtpr iproute2-2.6.9.patched/ip/rtpr
+--- iproute2-2.6.9/ip/rtpr	2004-10-19 22:49:02.000000000 +0200
++++ iproute2-2.6.9.patched/ip/rtpr	1970-01-01 01:00:00.000000000 +0100
+@@ -1,4 +0,0 @@
+-#! /bin/bash
+-
+-exec tr "[\\\\]" "[
+-]"
+diff -Nru iproute2-2.6.9/misc/Makefile iproute2-2.6.9.patched/misc/Makefile
+--- iproute2-2.6.9/misc/Makefile	2004-10-19 22:49:02.000000000 +0200
++++ iproute2-2.6.9.patched/misc/Makefile	2006-04-29 01:34:06.000000000 +0200
+@@ -1,7 +1,8 @@
+ SSOBJ=ss.o ssfilter.o
+ LNSTATOBJ=lnstat.o lnstat_util.o
+ 
+-TARGETS=ss nstat ifstat rtacct arpd lnstat
++#TARGETS=ss nstat ifstat rtacct arpd lnstat
++TARGETS=ifstat
+ 
+ include ../Config
+ 
+@@ -27,7 +28,7 @@
+ lnstat: $(LNSTATOBJ)
+ 
+ install: all
+-	install -m 0755 -s $(TARGETS) $(DESTDIR)$(SBINDIR)
++	install -m 0755 $(TARGETS) $(DESTDIR)$(SBINDIR)
+ 	ln -sf $(SBINDIR)/lnstat $(DESTDIR)$(SBINDIR)/rtstat
+ 	ln -sf $(SBINDIR)/lnstat $(DESTDIR)$(SBINDIR)/ctstat
+ 
+diff -Nru iproute2-2.6.9/tc/Makefile iproute2-2.6.9.patched/tc/Makefile
+--- iproute2-2.6.9/tc/Makefile	2004-10-19 22:49:02.000000000 +0200
++++ iproute2-2.6.9.patched/tc/Makefile	2006-04-29 01:00:00.000000000 +0200
+@@ -48,7 +48,7 @@
+ 	$(CC) $(CFLAGS) -shared -fpic $< -o $@
+ 
+ %.dist: %.c
+-	$(CC) $(CFLAGS) -o $* $< -lm
++	gcc $(CFLAGS) -o $* $< -lm
+ 	./$* >$@
+ 	rm $*
+ 
+@@ -61,13 +61,13 @@
+ 	$(AR) rcs $@ $(TCLIB)
+ 
+ install: all
+-	mkdir -p $(DESTDIR)/usr/lib/tc
+-	install -m 0755 -s tc $(DESTDIR)$(SBINDIR)
++	mkdir -p $(DESTDIR)/lib/tc
++	install -m 0755 tc $(DESTDIR)$(SBINDIR)
+ 	for i in $(TCSO); \
+-	do install -m 755 -s $$i $(DESTDIR)/usr/lib/tc; \
++	do install -m 755 $$i $(DESTDIR)/lib/tc; \
+ 	done
+ 	for i in $(NETEM_DIST); \
+-	do install -m 755 $$i $(DESTDIR)/usr/lib/tc; \
++	do install -m 755 $$i $(DESTDIR)/lib/tc; \
+ 	done
+ 
+ clean:
+diff -Nru iproute2-2.6.9/tc/q_netem.c iproute2-2.6.9.patched/tc/q_netem.c
+--- iproute2-2.6.9/tc/q_netem.c	2004-10-19 22:49:02.000000000 +0200
++++ iproute2-2.6.9.patched/tc/q_netem.c	2006-04-29 01:00:00.000000000 +0200
+@@ -59,7 +59,7 @@
+ 	char *line;
+ 	char name[128];
+ 
+-	snprintf(name, sizeof(name), "/usr/lib/tc/%s.dist", type);
++	snprintf(name, sizeof(name), "/lib/tc/%s.dist", type);
+ 	if ((f = fopen(name, "r")) == NULL) {
+ 		fprintf(stderr, "No distribution data for %s (%s: %s)\n", 
+ 			type, name, strerror(errno));
+diff -Nru iproute2-2.6.9/tc/tc.c iproute2-2.6.9.patched/tc/tc.c
+--- iproute2-2.6.9/tc/tc.c	2004-10-19 22:49:02.000000000 +0200
++++ iproute2-2.6.9.patched/tc/tc.c	2006-04-29 01:00:00.000000000 +0200
+@@ -97,7 +97,7 @@
+ 		if (strcmp(q->id, str) == 0)
+ 			return q;
+ 
+-	snprintf(buf, sizeof(buf), "/usr/lib/tc/q_%s.so", str);
++	snprintf(buf, sizeof(buf), "/lib/tc/q_%s.so", str);
+ 	dlh = dlopen(buf, RTLD_LAZY);
+ 	if (!dlh) {
+ 		/* look in current binary, only open once */
+@@ -143,7 +143,7 @@
+ 		if (strcmp(q->id, str) == 0)
+ 			return q;
+ 
+-	snprintf(buf, sizeof(buf), "/usr/lib/tc/f_%s.so", str);
++	snprintf(buf, sizeof(buf), "/lib/tc/f_%s.so", str);
+ 	dlh = dlopen(buf, RTLD_LAZY);
+ 	if (dlh == NULL) {
+ 		dlh = BODY;

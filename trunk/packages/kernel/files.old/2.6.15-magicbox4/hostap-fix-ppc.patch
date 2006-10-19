@@ -1,0 +1,21 @@
+--- driver/modules/hostap_ioctl.c
++++ driver/modules/hostap_ioctl.c
+@@ -1840,7 +1840,7 @@ static char * __prism2_translate_scan(lo
+ 	memset(&iwe, 0, sizeof(iwe));
+ 	iwe.cmd = SIOCGIWFREQ;
+ 	if (scan) {
+-		chan = scan->chid;
++		chan = le16_to_cpu(scan->chid);
+ 	} else if (bss) {
+ 		chan = bss->chan;
+ 	} else {
+@@ -1848,7 +1848,7 @@ static char * __prism2_translate_scan(lo
+ 	}
+ 
+ 	if (chan > 0) {
+-		iwe.u.freq.m = freq_list[le16_to_cpu(chan - 1)] * 100000;
++		iwe.u.freq.m = freq_list[chan - 1] * 100000;
+ 		iwe.u.freq.e = 1;
+ 		iwe.len = IW_EV_FREQ_LEN;
+ 		current_ev = iwe_stream_add_event(current_ev, end_buf, &iwe,
+

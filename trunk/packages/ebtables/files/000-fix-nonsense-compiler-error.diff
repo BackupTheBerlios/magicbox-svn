@@ -1,0 +1,12 @@
+diff -ur ebtables-v2.0.6.orig/ebtables.c ebtables-v2.0.6/ebtables.c
+--- ebtables-v2.0.6.orig/ebtables.c	2006-01-04 20:15:09.000000000 +0100
++++ ebtables-v2.0.6/ebtables.c	2006-01-04 20:16:37.000000000 +0100
+@@ -1171,6 +1171,7 @@
+ 			continue;
+ 		return i;
+ letscontinue:
++		{ int fix_this_compiler_brokeness = 1; }
+ 	}
+ 	return -1;
+ }
+Only in ebtables-v2.0.6: ebtables.c~

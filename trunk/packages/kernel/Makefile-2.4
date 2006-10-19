@@ -1,0 +1,56 @@
+# linux-2.4
+
+PKG_NAME:=		kernel
+PKG_VER:=		2.x
+PKG_KERNEL_VER:=	2.4.33
+PKG_KERNEL_BUILDVER:=	2.4.33-magicbox1
+PKG_FILE:=		linux-$(PKG_KERNEL_VER).tar.bz2
+PKG_SOURCE:=		http://kernel.org/pub/linux/kernel/v2.4/$(PKG_FILE)
+PKG_PACK_DIR:=		linux-$(PKG_KERNEL_VER)
+PKG_UNPACK:=		tar_bz2
+PKG_FILES_DIR=		$(PKG_DIR)/files-2.4
+
+
+define PackagePatch
+cd $(PKG_WORKDIR) && patch -p1 < $(PKG_FILES_DIR)/000-fix-makefile-$(PKG_KERNEL_VER).patch
+cd $(PKG_WORKDIR) && patch -p1 < $(PKG_FILES_DIR)/magicbox-board-2.4.32.patch
+cd $(PKG_WORKDIR) && patch -p1 < $(PKG_FILES_DIR)/magicbox-flashmap-2.4.32.patch
+cd $(PKG_WORKDIR) && patch -p1 < $(PKG_FILES_DIR)/010-load-ramdisk-even-if-rootdev-equal-ram0-2.4.32.patch
+cd $(PKG_WORKDIR) && patch -p1 < $(PKG_FILES_DIR)/squashfs3.0-patch
+cd $(PKG_WORKDIR) && patch -p1 < $(PKG_FILES_DIR)/ibm-i2c-2.4.32.patch
+cd $(PKG_WORKDIR) && patch -p1 < $(PKG_FILES_DIR)/ebtables-brnf-11-2_vs_2.4.31.diff
+cp $(PKG_FILES_DIR)/config-$(PKG_KERNEL_BUILDVER) $(PKG_WORKDIR)/.config
+endef
+
+define PackageBuild
+$(MAKE) -C $(PKG_WORKDIR) $(KERNEL_ENV) oldconfig 
+$(MAKE) -C $(PKG_WORKDIR) $(KERNEL_ENV) dep
+$(MAKE) -C $(PKG_WORKDIR) $(KERNEL_ENV)
+$(MAKE) -C $(PKG_WORKDIR) $(KERNEL_ENV) modules
+rm -f $(KERNEL_VER_FILE)
+echo "KERNEL_VER:=$(PKG_KERNEL_BUILDVER)" >> $(KERNEL_VER_FILE)
+endef
+
+define PackageInstall
+$(call InstallDir,lib/modules)
+# 2.4 depmod will fail, thus "|| true"
+$(MAKE) -C $(PKG_WORKDIR) $(KERNEL_ENV) INSTALL_MOD_PATH=$(PKG_TMP) modules_install || true
+rm -f $(PKG_TMP)/lib/modules/*/modules.*
+rm -f $(PKG_TMP)/lib/modules/*/build
+rm -f $(PKG_TMP)/lib/modules/*/source
+cd $(PKG_WORKDIR) && $(PKG_OBJCOPY) -O binary $(PKG_WORKDIR)/vmlinux ./vmlinux.bin
+cd $(PKG_WORKDIR) && gzip -9 vmlinux.bin
+cd $(PKG_WORKDIR) && mkimage -A ppc -O linux -T kernel -C gzip -d vmlinux.bin.gz kernel-$(PKG_KERNEL_BUILDVER)
+-rm -f vmlinux.bin.gz
+install -m644 $(PKG_WORKDIR)/kernel-$(PKG_KERNEL_BUILDVER) $(OBJ_DIR)/kernel
+endef
+
+#define PackageClean
+#rm -f $(KERNEL_VER_FILE)
+#endef
+
+define PackageDistclean
+rm -f $(KERNEL_VER_FILE) $(OBJ_DIR)/kernel
+endef
+
+include $(TOPDIR)/include/package.mk

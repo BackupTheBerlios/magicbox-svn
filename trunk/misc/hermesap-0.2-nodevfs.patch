@@ -1,0 +1,322 @@
+diff -Nru hermesap-0.2/driver/orinoco-0.13c/orinoco.c hermesap-0.2-nodevfs/driver/orinoco-0.13c/orinoco.c
+--- hermesap-0.2/driver/orinoco-0.13c/orinoco.c	2003-05-25 01:02:31.000000000 +0200
++++ hermesap-0.2-nodevfs/driver/orinoco-0.13c/orinoco.c	2006-03-18 15:56:41.000000000 +0100
+@@ -370,6 +370,10 @@
+  *       TMD7160 based PCI to PCMCIA bridges (similar to
+  *       orinoco_plx.c).
+  *
++ * v0.13c-nodevfs -- Sat, 18 Mar 2006 15:21:29 +0100  Karol Lewandowski
++ *     o remove devfs usage -- switch to private character device for
++ *       firmware updates
++ *
+  * TODO
+  *	o New wireless extensions API (patch from Moustafa
+  *	  Youssef, updated by Jim Carter).
+@@ -419,14 +423,7 @@
+ #include <linux/wireless.h>
+ 
+ /* for mem_dev */
+-#include <linux/autoconf.h> /* CONFIG_DEVFS_FS defined? */
+-#ifndef CONFIG_DEVFS_FS
+-#warning no devfs support enabled!
+-#warning You wont be able to use AccessPoint mode!
+-#warning Install a kernel with devfs support
+-#warning and recompile this driver
+-#endif
+-#include <linux/devfs_fs_kernel.h>
++#include <linux/autoconf.h>
+ 
+ #include "hermes.h"
+ #include "hermes_rid.h"
+@@ -608,7 +605,6 @@
+ 
+ static int orinoco_debug_dump_rids(struct orinoco_private *priv);
+ 
+-#ifdef CONFIG_DEVFS_FS
+ /* memdev stuff */
+ static int orinoco_mem_ioctl (struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg);
+ static int orinoco_mem_open (struct inode *inode, struct file *file);
+@@ -621,12 +617,16 @@
+         owner:          THIS_MODULE,
+         read:           orinoco_mem_read,
+         write:          orinoco_mem_write,
+-		llseek:		orinoco_mem_llseek,
++	llseek:		orinoco_mem_llseek,
+         ioctl:          orinoco_mem_ioctl,
+         open:           orinoco_mem_open,
+         release:        orinoco_mem_close,
+ };
+-#endif
++
++#define ORINOCO_MAX_DEVICES 16
++#define ORINOCO_MAJOR 250
++#define ORINOCO_DEVNAME "orinoco_mem"
++static void *orinoco_dev_priv[ORINOCO_MAX_DEVICES];
+ 
+ /********************************************************************/
+ /* Function prototypes                                              */
+@@ -773,11 +773,10 @@
+ 	err = orinoco_lock(priv, &flags);
+ 	if (err)
+ 		return err;
+-#ifdef CONFIG_DEVFS_FS
++
+ 	if(priv->dl_pid) /* firmware upload in progress - reject setup of netdev */
+ 		err= -EBUSY;
+ 	else {
+-#endif
+ 		/* primary */
+ 		if(dev == priv->ndev)
+ 			priv->open = 1;
+@@ -793,9 +792,7 @@
+ 		}
+ 
+ 		err = __orinoco_up(dev);
+-#ifdef CONFIG_DEVFS_FS
+ 	}
+-#endif
+ 	out:
+ 	orinoco_unlock(priv, &flags);
+ 
+@@ -5157,43 +5154,55 @@
+ /* mem_dev stuff */
+ 
+ int orinoco_mem_dev_init(struct orinoco_private *priv) {
+-#ifdef CONFIG_DEVFS_FS
+-	struct net_device *dev = priv->ndev;
+-	char devfsname[IFNAMSIZ+13];
++	int i;
+ 	
+ 	priv->mem_open=0;
+ 	priv->dl_pid=0;
+ 	
+-	sprintf(devfsname,"orinoco/%s_mem",dev->name);
+-	
+-	priv->mem_dev=devfs_register(NULL,devfsname,
+-												DEVFS_FL_DEFAULT,
+-												0,0, S_IFCHR | S_IRUSR | S_IWUSR,
+-												&orinoco_mem_fops,
+-												priv);
+-	
+-	if(priv->mem_dev==NULL) {
+-		printk(KERN_ERR "orinoco: can't create devfs entry for %s\n",dev->name);
+-		return -ENOMEM;
++	for(i = 0; i < ORINOCO_MAX_DEVICES; i++)
++	{
++		if (orinoco_dev_priv[i] == 0)
++		{
++			orinoco_dev_priv[i] = priv;
++			break;
++		}
+ 	}
+-#else
+-	printk(KERN_ERR "orinoco: mem_dev not available (no devfs support)\n");
+-#endif
++	
++	if (i < ORINOCO_MAX_DEVICES)
++		printk ("orinoco: registered new device as minor %d\n", i);
++
+ 	return 0;
+ }
+ 
+ void orinoco_mem_dev_cleanup(struct orinoco_private *priv) {
+-#ifdef CONFIG_DEVFS_FS
+-	devfs_unregister(priv->mem_dev);
+-#endif
++	int i;
++
++	for (i = 0; i < ORINOCO_MAX_DEVICES; i++)
++		if (orinoco_dev_priv[i] == priv)
++		{
++			printk("orinoco: freed device minor %d\n", i);
++			orinoco_dev_priv[i] = 0;
++		}
+ }
+ 
+-#ifdef CONFIG_DEVFS_FS
+ static int orinoco_mem_open (struct inode *inode, struct file *file) {
+-	struct orinoco_private *priv = (struct orinoco_private *)file->private_data;
+-	hermes_t *hw = &priv->hw;
++	struct orinoco_private *priv;
++	hermes_t *hw;
++
+ 	unsigned long flags;
+ 	int res=0;
++	int minor;
++
++	minor = MINOR(inode->i_rdev);
++/*
++	printk ("orinoco: trying to open device %d:%d, contents 0x%x\n",
++		MAJOR(inode->i_dev), minor, orinoco_dev_priv[minor]);
++*/
++	if (orinoco_dev_priv[minor] == 0)
++		return -ENOTTY;
++
++	priv = (struct orinoco_private *)orinoco_dev_priv[minor];
++	hw = &priv->hw;
+ 		
+ 	res = orinoco_lock(priv, &flags);	/* ##### LOCK ##### */
+ 	if(res)
+@@ -5212,9 +5221,17 @@
+ }
+ 
+ static int orinoco_mem_close(struct inode *inode, struct file *file) {
+-	struct orinoco_private *priv = (struct orinoco_private *)file->private_data;
+-	hermes_t *hw = &priv->hw;
++	struct orinoco_private *priv;
++	hermes_t *hw;
+ 	unsigned long flags;
++	int minor;
++
++	minor = MINOR(inode->i_rdev);
++	if (orinoco_dev_priv[minor] == 0)
++		return -ENOTTY;
++
++	priv = (struct orinoco_private *)orinoco_dev_priv[minor];
++	hw = &priv->hw;
+ 	
+ 	spin_lock_irqsave(&priv->lock, flags); /* ##### LOCK ##### */
+ 	
+@@ -5246,10 +5263,18 @@
+ }
+ 
+ static int orinoco_mem_ioctl (struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg) {
+-	struct orinoco_private *priv = (struct orinoco_private *)file->private_data;
+-	hermes_t *hw = &priv->hw;
++	struct orinoco_private *priv;
++	hermes_t *hw;
+ 	unsigned long flags;
+ 	int res=0;
++	int minor;
++
++	minor = MINOR(inode->i_rdev);
++	if (orinoco_dev_priv[minor] == 0)
++		return -ENOTTY;
++
++	priv = (struct orinoco_private *)orinoco_dev_priv[minor];
++	hw = &priv->hw;
+ 	
+ 	/* check if AUX port enabled / device ok */
+ 	if(!hermes_aux_enabled(hw))
+@@ -5321,12 +5346,20 @@
+ }
+ 
+ static ssize_t orinoco_mem_read (struct file *file, char *buf, size_t count, loff_t *offset) {
+-	struct orinoco_private *priv = (struct orinoco_private *)file->private_data;
+-	hermes_t *hw = &priv->hw;
++	struct orinoco_private *priv;
++	hermes_t *hw;
+ 	unsigned long flags;
+ 	u16 pagebuf[HERMES_AUX_PAGESIZE>>1];
+ 	char *pb=buf;
+ 	int cnt, cnt2, res=0;
++	int minor;
++
++	minor = MINOR(file->f_dentry->d_inode->i_rdev);
++	if (orinoco_dev_priv[minor] == 0)
++		return -ENOTTY;
++
++	priv = (struct orinoco_private *)orinoco_dev_priv[minor];
++	hw = &priv->hw;
+ 	
+ 	/* check offset provided by user */
+ 	if(*offset>=(HERMES_AUX_PAGES*HERMES_AUX_PAGESIZE))
+@@ -5411,12 +5444,20 @@
+ }
+ 
+ static ssize_t orinoco_mem_write (struct file *file, const char *buf, size_t count, loff_t *offset) {
+-	struct orinoco_private *priv = (struct orinoco_private *)file->private_data;
+-	hermes_t *hw = &priv->hw;
++	struct orinoco_private *priv;
++	hermes_t *hw;
+ 	unsigned long flags;
+ 	u16 pagebuf[HERMES_AUX_PAGESIZE>>1];
+ 	const char *pb=buf;
+ 	int cnt,cnt2,res=0;
++	int minor;
++
++	minor = MINOR(file->f_dentry->d_inode->i_rdev);
++	if (orinoco_dev_priv[minor] == 0)
++		return -ENOTTY;
++
++	priv = (struct orinoco_private *)orinoco_dev_priv[minor];
++	hw = &priv->hw;
+ 		
+ 	/* check offset provided by user */
+ 	if(*offset>=(HERMES_AUX_PAGES*HERMES_AUX_PAGESIZE))
+@@ -5553,7 +5594,6 @@
+ 	filp->f_pos=newpos;
+ 	return newpos;
+ }
+-#endif /* CONFIG_FS_DEVFS */
+ 
+ /* end of mem_dev stuff */
+ 
+@@ -5673,14 +5713,26 @@
+ EXPORT_SYMBOL(orinoco_action);
+ 
+ /* Can't be declared "const" or the whole __initdata section will become const */
+-static char version[] __initdata = "orinoco.c 0.13c (David Gibson <hermes@gibson.dropbear.id.au> and others)";
++static char version[] __initdata = "orinoco.c 0.13c-nodevfs (David Gibson <hermes@gibson.dropbear.id.au> and others)";
+ 
+ static int __init init_orinoco(void) {
++	int ret;
++
+ 	printk(KERN_DEBUG "%s\n", version);
++
++	ret = register_chrdev(ORINOCO_MAJOR,ORINOCO_DEVNAME,&orinoco_mem_fops);
++	if (ret < 0)
++		printk ("orinoco: failed to register memory character "
++			"device at major %d\n", ORINOCO_MAJOR);
++	else
++		printk ("orinoco: registered memory character device at "
++			"major %d\n", ORINOCO_MAJOR);
++	
+ 	return 0;
+ }
+ 
+ static void __exit exit_orinoco(void) {
++	unregister_chrdev(ORINOCO_MAJOR, ORINOCO_DEVNAME);
+ }
+ 
+ module_init(init_orinoco);
+diff -Nru hermesap-0.2/hfw/Makefile hermesap-0.2-nodevfs/hfw/Makefile
+--- hermesap-0.2/hfw/Makefile	2003-05-25 01:02:31.000000000 +0200
++++ hermesap-0.2-nodevfs/hfw/Makefile	2006-03-18 15:42:18.000000000 +0100
+@@ -1,11 +1,11 @@
+ #!/usr/bin/make
+ 
+ CC = gcc
+-CFLAGS = -O3
++CFLAGS = -Os
+ CPPFLAGS = -Wall
+ LDFLAGS = 
+ 
+-PREFIX = /usr/local
++PREFIX = /
+ TARGETS = hfwload hfwget #binfw2hfw
+ 
+ COMMON_SRC = pdar.c hfw.c
+diff -Nru hermesap-0.2/hfw/hfwload.c hermesap-0.2-nodevfs/hfw/hfwload.c
+--- hermesap-0.2/hfw/hfwload.c	2003-05-25 01:02:31.000000000 +0200
++++ hermesap-0.2-nodevfs/hfw/hfwload.c	2006-03-18 15:57:10.000000000 +0100
+@@ -54,14 +54,15 @@
+ 	}
+ 	
+ 	if(argc<3) {
+-		fprintf(stderr,"usage: %s ethX <firmware.hfw> (-o <opda>) (-v (-v (-v)))\n",argv[0]);
+-		fprintf(stderr,"see docs and http://www.comteam.at/~alex/phpBB2/index.php for more infos\n");
++		fprintf(stderr, "usage: %s DEVICE_MINOR FIRMWARE.HFW [-o OPDA]"
++			"[-v [-v [-v]]]\n", argv[0]);
++		fprintf(stderr,"For first orinoco card use:\n"
++			"  %s 0 /path/to/your/firmware\n"
+ 		return 0;
+ 	}
+ 	
+-	strcpy(pda,"/dev/orinoco/");
++	strcpy(pda,"/dev/orinoco");
+ 	strcat(pda,argv[1]);
+-	strcat(pda,"_mem");
+ 
+ 	if((fd=open(pda,O_RDWR))<0) {
+ 		fprintf(stderr,"can't open %s\n",pda);

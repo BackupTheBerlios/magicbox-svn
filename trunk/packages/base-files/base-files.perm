@@ -1,0 +1,2 @@
+share/var/tmp root root 1777
+share/etc/sudoers root root 0440

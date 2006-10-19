@@ -1,0 +1,157 @@
+MagicBox build tools
+====================
+
+This directory contains files required to create magicbox-compatible
+kernels and ramdisks.
+
+NO WARRANTY.  Proceed at your own risk.
+
+
+Directory structure and important files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Config      -- main configuration file
+  LICENSE     -- redistribution terms
+  build/      -- build directory
+  fetch/      -- source tarballs
+  misc/       -- random stuff (hermesap patch, pcmcia-cs+hermesap, etc.)
+  obj/        -- compiled stuff (kernel, ramdisk image)
+  packages/   -- packages to build
+  scripts/    -- helper script(s)
+  toolchain/  -- (obsolete) Makefile to build compiler and linker
+
+Prerequisites
+~~~~~~~~~~~~~
+Building kernels and packages have following requirements:
+
+ * some GNU/Linux distribution, (preferebly Debian, because of fakeroot),
+ * powerpc toolchain (powerpc-linux-{gcc,ld,ar,...}),
+ * fakeroot tool to mimic root environment,
+ * mksquashfs from squashfs-3.0 or higher,
+ * about 1GB of free disk space,
+ * fast machine and/or patience.
+
+Not needed but it's assumed that you have i386-compatible machine (you
+will need to tweak at least ./include/variables.mk if you don't).
+
+Building your own toolchain
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1) Build C Library with some cross-compiler (I used ELDK to bootstrap this).
+  2) Build toolchain (link to your new C Library), toolchain/ is useful for
+     this step only.
+  3) Fix include/asm, include/linux braindamages, e.g. iptraf needs santized
+     include/linux/if_fddi.h, probably other programs need santized headers
+     too.
+  4) Build development packages and install them to ../lib and ../include.
+
+Sadly toolchain directory contains just obsolete and/or broken
+Makefile... whole toolchain/ is pending rewrite.
+
+Preparing build environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 1) Toolchain
+ ------------
+Grab provided toolchain package and extract it into /usr/local, i.e.
+(change DATE to latest available on ftp):
+
+  # cd /tmp
+  # wget ftp://magicbox.pl/magicbox/extras/sdk/sdk2/magicbox-toolchain_DATE.tar.bz2
+  # cd /usr/local
+  # tar xjvf magicbox-toolchain_DATE.tar.bz2
+
+Now you should have working compiler in /usr/local/magicbox/host-i386/
+directory, test it by issuing:
+
+  # /usr/local/magicbox/host-i386/bin/powerpc-linux-gcc --version
+
+You should get something like that:
+
+powerpc-linux-gcc (GCC) 3.4.5
+Copyright (C) 2004 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Please note that toolchain *needs* to be in /usr/local/magicbox
+(you need to recompile at least gcc to change that).
+
+ 2) Environment
+ --------------
+Set following environment variables (Bourne shell syntax):
+
+  PATH=/usr/local/magicbox/host-i386/bin:$PATH
+  CROSS_COMPILE=powerpc-linux-
+  ARCH=ppc
+
+  export PATH CROSS_COMPILE ARCH
+
+This is needed for compiling packages (ARCH and CROSS_COMPILE may be
+redundant but it might be handy when you'll want to reconfigure
+kernel's .config).
+
+  3) Config
+  ---------
+Edit top dir Config file.  Comment out unneded configuration options.
+
+  4) Sources
+  ----------
+In toplevel directory type:
+
+  $ make fetch
+
+This will download required packages.
+
+Building
+~~~~~~~~
+Type:
+
+  $ make world
+
+to build everything.  Kernel image will be placed in obj/kernel,
+ramdisk image in obj/image.squashfs.
+
+Hacking
+~~~~~~~
+ *) Reconfiguring kernel
+ -----------------------
+If you wish to customize kernel build parameters then type:
+
+  $ make package/kernel/patch
+
+Go into kernel build workdir:
+
+  $ cd build/compile/kernel-2.x
+
+Configure kernel to your taste:
+
+  $ make menuconfig
+
+When you are done go back to toplevel directory and rebuild it:
+
+  $ make kernel/package
+
+  *) Changing ./Config and rebuilding invidual packages
+  -----------------------------------------------------
+If you have changed or customized package in any way you will probably
+want to rebuild it.  Type following to do that:
+
+  $ make package/PKGNAME/distclean
+  $ make package/PKGNAME/package
+
+If you have changed your configuration before creating new image you
+should do:
+
+ $ make world/pkgclean
+
+to remove old packages, and then:
+
+ $ make image
+
+to build image again.
+
+  *) Further help
+  ---------------
+  Check this:
+
+  $ make help
+
+________________________________________________________________________
+Good luck!                                             kl@jasmine.eu.org

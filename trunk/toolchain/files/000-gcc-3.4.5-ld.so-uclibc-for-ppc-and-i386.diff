@@ -1,0 +1,33 @@
+diff -ur gcc-3.4.5/gcc/config/i386/linux.h gcc-3.4.5-uclibc/gcc/config/i386/linux.h
+--- gcc-3.4.5/gcc/config/i386/linux.h	2003-11-29 04:08:13.000000000 +0100
++++ gcc-3.4.5-uclibc/gcc/config/i386/linux.h	2006-03-02 22:21:00.000000000 +0100
+@@ -123,7 +123,7 @@
+     %{!ibcs: \
+       %{!static: \
+ 	%{rdynamic:-export-dynamic} \
+-	%{!dynamic-linker:-dynamic-linker /lib/ld-linux.so.2}} \
++	%{!dynamic-linker:-dynamic-linker /lib/ld-uClibc.so.0}} \
+ 	%{static:-static}}}"
+ #endif
+ 
+diff -ur gcc-3.4.5/gcc/config/rs6000/sysv4.h gcc-3.4.5-uclibc/gcc/config/rs6000/sysv4.h
+--- gcc-3.4.5/gcc/config/rs6000/sysv4.h	2005-10-30 00:35:37.000000000 +0200
++++ gcc-3.4.5-uclibc/gcc/config/rs6000/sysv4.h	2006-03-02 22:21:47.000000000 +0100
+@@ -1125,7 +1125,7 @@
+ 
+ #define LINK_OS_LINUX_SPEC "-m elf32ppclinux %{!shared: %{!static: \
+   %{rdynamic:-export-dynamic} \
+-  %{!dynamic-linker:-dynamic-linker /lib/ld.so.1}}}"
++  %{!dynamic-linker:-dynamic-linker /lib/ld-uClibc.so.0}}}"
+ 
+ #if defined(HAVE_LD_EH_FRAME_HDR)
+ # define LINK_EH_SPEC "%{!static:--eh-frame-hdr} "
+@@ -1156,7 +1156,7 @@
+ 
+ #define LINK_OS_GNU_SPEC "-m elf32ppclinux %{!shared: %{!static: \
+   %{rdynamic:-export-dynamic} \
+-  %{!dynamic-linker:-dynamic-linker /lib/ld.so.1}}}"
++  %{!dynamic-linker:-dynamic-linker /lib/ld-uClibc.so.0}}}"
+ 
+ #define CPP_OS_GNU_SPEC "-D__unix__ -D__gnu_hurd__ -D__GNU__	\
+ %{!undef:					                \

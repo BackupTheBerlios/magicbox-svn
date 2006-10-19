@@ -1,0 +1,49 @@
+--- dhcp-2.0pl5.orig/common/errwarn.c
++++ dhcp-2.0pl5/common/errwarn.c
+@@ -71,7 +71,7 @@
+   va_end (list);
+ 
+ #ifndef DEBUG
+-  syslog (log_priority | LOG_ERR, mbuf);
++  syslog (log_priority | LOG_ERR, "%s", mbuf);
+ #endif
+ 
+   /* Also log it to stderr? */
+@@ -104,7 +104,7 @@
+   va_end (list);
+ 
+ #ifndef DEBUG
+-  syslog (log_priority | LOG_ERR, mbuf);
++  syslog (log_priority | LOG_ERR, "%s", mbuf);
+ #endif
+ 
+   if (log_perror) {
+@@ -130,7 +130,7 @@
+   va_end (list);
+ 
+ #ifndef DEBUG
+-  syslog (log_priority | LOG_INFO, mbuf);
++  syslog (log_priority | LOG_INFO, "%s", mbuf);
+ #endif
+ 
+   if (log_perror) {
+@@ -156,7 +156,7 @@
+   va_end (list);
+ 
+ #ifndef DEBUG
+-  syslog (log_priority | LOG_DEBUG, mbuf);
++  syslog (log_priority | LOG_DEBUG, "%s", mbuf);
+ #endif
+ 
+   if (log_perror) {
+@@ -231,8 +231,8 @@
+ 	va_end (list);
+ 
+ #ifndef DEBUG
+-	syslog (log_priority | LOG_ERR, mbuf);
+-	syslog (log_priority | LOG_ERR, token_line);
++	syslog (log_priority | LOG_ERR, "%s", mbuf);
++	syslog (log_priority | LOG_ERR, "%s", token_line);
+ 	if (lexline < 81)
+ 		syslog (log_priority | LOG_ERR,
+ 			"%s^", &spaces [sizeof spaces - lexchar]);

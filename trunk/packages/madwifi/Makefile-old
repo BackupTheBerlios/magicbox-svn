@@ -1,0 +1,55 @@
+# madwifi-old
+
+PKG_NAME:=		madwifi-old
+PKG_VER:=		current
+PKG_FILE:=		$(PKG_NAME)-$(PKG_VER).tar.gz
+PKG_SOURCE:=		http://snapshots.madwifi.org/$(PKG_FILE)
+PKG_PACK_DIR:=		madwifi-old-r????-????????
+PKG_UNPACK:=		tar_gz
+PKG_MADWIFI_TARGET:=	powerpc-be-eabi
+
+
+define PackageBuild
+$(MAKE) -C $(PKG_WORKDIR) $(KERNEL_ENV) TARGET=$(PKG_MADWIFI_TARGET) \
+KERNELPATH=$(KERNEL_BUILD_DIR) ATH_RATE=ath_rate/onoe \
+TOOLPREFIX=$(PKG_TOOLCHAIN)
+$(MAKE) -C $(PKG_WORKDIR) $(KERNEL_ENV) TARGET=$(PKG_MADWIFI_TARGET) \
+KERNELPATH=$(KERNEL_BUILD_DIR) ATH_RATE=ath_rate/amrr \
+TOOLPREFIX=$(PKG_TOOLCHAIN)
+$(MAKE) -C $(PKG_WORKDIR) $(KERNEL_ENV) TARGET=$(PKG_MADWIFI_TARGET) \
+KERNELPATH=$(KERNEL_BUILD_DIR) TOOLPREFIX=$(PKG_TOOLCHAIN)
+$(MAKE) -C $(PKG_WORKDIR)/tools $(KERNEL_ENV) TARGET=$(PKG_MADWIFI_TARGET) \
+KERNELPATH=$(KERNEL_BUILD_DIR) TOOLPREFIX=$(PKG_TOOLCHAIN)
+endef
+
+define PackageInstall
+$(call InstallDir,lib/modules/$(KERNEL_VER)/madwifi)
+install -m644 $(PKG_WORKDIR)/ath/ath_pci.$(MODEXT) $(PKG_TMP)/lib/modules/$(KERNEL_VER)/madwifi/ath_pci.$(MODEXT)
+install -m644 $(PKG_WORKDIR)/ath_hal/ath_hal.$(MODEXT) $(PKG_TMP)/lib/modules/$(KERNEL_VER)/madwifi/ath_hal.$(MODEXT)
+install -m644 $(PKG_WORKDIR)/net80211/wlan.$(MODEXT) $(PKG_TMP)/lib/modules/$(KERNEL_VER)/madwifi/wlan.$(MODEXT)
+install -m644 $(PKG_WORKDIR)/net80211/wlan_acl.$(MODEXT) $(PKG_TMP)/lib/modules/$(KERNEL_VER)/madwifi/wlan_acl.$(MODEXT)
+install -m644 $(PKG_WORKDIR)/net80211/wlan_ccmp.$(MODEXT) $(PKG_TMP)/lib/modules/$(KERNEL_VER)/madwifi/wlan_ccmp.$(MODEXT)
+install -m644 $(PKG_WORKDIR)/net80211/wlan_tkip.$(MODEXT) $(PKG_TMP)/lib/modules/$(KERNEL_VER)/madwifi/wlan_tkip.$(MODEXT)
+install -m644 $(PKG_WORKDIR)/net80211/wlan_wep.$(MODEXT) $(PKG_TMP)/lib/modules/$(KERNEL_VER)/madwifi/wlan_wep.$(MODEXT)
+install -m644 $(PKG_WORKDIR)/net80211/wlan_xauth.$(MODEXT) $(PKG_TMP)/lib/modules/$(KERNEL_VER)/madwifi/wlan_xauth.$(MODEXT)
+install -m644 $(PKG_WORKDIR)/ath_rate/sample/ath_rate_sample.$(MODEXT) $(PKG_TMP)/lib/modules/$(KERNEL_VER)/madwifi/ath_rate_sample.$(MODEXT)
+install -m644 $(PKG_WORKDIR)/ath_rate/amrr/ath_rate_amrr.$(MODEXT) $(PKG_TMP)/lib/modules/$(KERNEL_VER)/madwifi/ath_rate_amrr.$(MODEXT)
+install -m644 $(PKG_WORKDIR)/ath_rate/onoe/ath_rate_onoe.$(MODEXT) $(PKG_TMP)/lib/modules/$(KERNEL_VER)/madwifi/ath_rate_onoe.$(MODEXT)
+rm -f $(PKG_TMP)/lib/modules/$(KERNEL_VER)/modules.*
+$(call InstallSbin,$(PKG_WORKDIR)/tools/80211debug,80211debug)
+$(call InstallSbin,$(PKG_WORKDIR)/tools/80211stats,80211stats)
+$(call InstallSbin,$(PKG_WORKDIR)/tools/athchans,athchans)
+$(call InstallSbin,$(PKG_WORKDIR)/tools/athctrl,athctrl)
+$(call InstallSbin,$(PKG_WORKDIR)/tools/athdebug,athdebug)
+$(call InstallSbin,$(PKG_WORKDIR)/tools/athkey,athkey)
+$(call InstallSbin,$(PKG_WORKDIR)/tools/athstats,athstats)
+endef
+
+include $(TOPDIR)/include/package.mk
+-include $(KERNEL_VER_FILE)
+
+ifeq ($(shell echo $(KERNEL_VER) | cut -d. -f2),4)
+MODEXT:=o
+else
+MODEXT:=ko
+endif

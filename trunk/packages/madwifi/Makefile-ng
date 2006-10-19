@@ -1,0 +1,55 @@
+# madwifi-ng
+
+PKG_NAME:=		madwifi-ng
+PKG_VER:=		0.9.2
+PKG_FILE:=		madwifi-$(PKG_VER).tar.bz2
+PKG_SOURCE:=		http://surfnet.dl.sf.net/sourceforge/madwifi/$(PKG_FILE)
+PKG_PACK_DIR:=		madwifi-$(PKG_VER)
+PKG_UNPACK:=		tar_bz2
+PKG_MADWIFI_TARGET:=	powerpc-be-eabi
+
+
+define PackageBuild
+$(MAKE) -C $(PKG_WORKDIR) $(KERNEL_ENV) TARGET=$(PKG_MADWIFI_TARGET) \
+KERNELPATH=$(KERNEL_BUILD_DIR) ATH_RATE=ath_rate/onoe modules
+$(MAKE) -C $(PKG_WORKDIR) $(KERNEL_ENV) TARGET=$(PKG_MADWIFI_TARGET) \
+KERNELPATH=$(KERNEL_BUILD_DIR) ATH_RATE=ath_rate/amrr modules
+$(MAKE) -C $(PKG_WORKDIR) $(KERNEL_ENV) TARGET=$(PKG_MADWIFI_TARGET) \
+KERNELPATH=$(KERNEL_BUILD_DIR) modules
+$(MAKE) -C $(PKG_WORKDIR) $(KERNEL_ENV) TARGET=$(PKG_MADWIFI_TARGET) \
+KERNELPATH=$(KERNEL_BUILD_DIR) CFLAGS="$(PKG_CFLAGS)" tools
+endef
+
+define PackageInstall
+$(MAKE) -C $(PKG_WORKDIR) $(KERNEL_ENV) TARGET=$(PKG_MADWIFI_TARGET) \
+KERNELPATH=$(KERNEL_BUILD_DIR) DESTDIR=$(PKG_TMP) install-modules
+cd $(PKG_TMP)/lib/modules/$(KERNEL_VER) && mv net madwifi
+install -m644 $(PKG_WORKDIR)/ath_rate/amrr/ath_rate_amrr.$(MODEXT) $(PKG_TMP)/lib/modules/$(KERNEL_VER)/madwifi/ath_rate_amrr.$(MODEXT)
+install -m644 $(PKG_WORKDIR)/ath_rate/onoe/ath_rate_onoe.$(MODEXT) $(PKG_TMP)/lib/modules/$(KERNEL_VER)/madwifi/ath_rate_onoe.$(MODEXT)
+rm -f $(PKG_TMP)/lib/modules/$(KERNEL_VER)/modules.*
+$(call InstallSbin,$(PKG_WORKDIR)/tools/80211debug,80211debug)
+$(call InstallSbin,$(PKG_WORKDIR)/tools/80211stats,80211stats)
+$(call InstallSbin,$(PKG_WORKDIR)/tools/athchans,athchans)
+$(call InstallSbin,$(PKG_WORKDIR)/tools/athctrl,athctrl)
+$(call InstallSbin,$(PKG_WORKDIR)/tools/athdebug,athdebug)
+$(call InstallSbin,$(PKG_WORKDIR)/tools/athkey,athkey)
+$(call InstallSbin,$(PKG_WORKDIR)/tools/athstats,athstats)
+$(call InstallSbin,$(PKG_WORKDIR)/tools/wlanconfig,wlanconfig)
+$(call InstallMan,$(PKG_WORKDIR)/tools/man/80211debug.8,80211debug)
+$(call InstallMan,$(PKG_WORKDIR)/tools/man/80211stats.8,80211stats)
+$(call InstallMan,$(PKG_WORKDIR)/tools/man/athchans.8,athchans)
+$(call InstallMan,$(PKG_WORKDIR)/tools/man/athctrl.8,athctrl)
+$(call InstallMan,$(PKG_WORKDIR)/tools/man/athdebug.8,athdebug)
+$(call InstallMan,$(PKG_WORKDIR)/tools/man/athkey.8,athkey)
+$(call InstallMan,$(PKG_WORKDIR)/tools/man/athstats.8,athstats)
+$(call InstallMan,$(PKG_WORKDIR)/tools/man/wlanconfig.8,wlanconfig)
+endef
+
+include $(TOPDIR)/include/package.mk
+-include $(KERNEL_VER_FILE)
+
+ifeq ($(shell echo $(KERNEL_VER) | cut -d. -f2),4)
+MODEXT:=o
+else
+MODEXT:=ko
+endif

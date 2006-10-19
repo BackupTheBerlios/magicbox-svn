@@ -1,0 +1,172 @@
+diff -Nru pcmcia-cs-3.2.8/Makefile pcmcia-cs-3.2.8-basic-config/Makefile
+--- pcmcia-cs-3.2.8/Makefile	2003-05-16 07:59:44.000000000 +0200
++++ pcmcia-cs-3.2.8-basic-config/Makefile	2006-03-20 23:55:01.000000000 +0100
+@@ -6,10 +6,10 @@
+ include config.mk
+ endif
+ 
+-ALL  = modules clients wireless cardmgr flash debug-tools man etc
+-DIRS = cardmgr flash debug-tools man etc
++ALL  = modules wireless cardmgr man etc
++DIRS = cardmgr man etc
+ ifndef CONFIG_PCMCIA
+-DIRS := modules clients wireless $(DIRS)
++DIRS := modules wireless $(DIRS)
+ endif
+ 
+ help:
+diff -Nru pcmcia-cs-3.2.8/cardmgr/Makefile pcmcia-cs-3.2.8-basic-config/cardmgr/Makefile
+--- pcmcia-cs-3.2.8/cardmgr/Makefile	2003-11-22 09:54:13.000000000 +0100
++++ pcmcia-cs-3.2.8-basic-config/cardmgr/Makefile	2006-03-20 23:55:01.000000000 +0100
+@@ -46,12 +46,12 @@
+ I_EXTRA	+= install-gpccard
+ endif
+ 
+-ifdef CONFIG_ISA
+-PROBE = pcic_probe
+-ifdef PREFIX
+-I_EXTRA += install-probe
+-endif
+-endif
++#ifdef CONFIG_ISA
++#PROBE = pcic_probe
++#ifdef PREFIX
++#I_EXTRA += install-probe
++#endif
++#endif
+ 
+ all:	$(SRCS) $(TOOLS) $(EXTRA) $(PROBE)
+ 
+diff -Nru pcmcia-cs-3.2.8/clients/Makefile pcmcia-cs-3.2.8-basic-config/clients/Makefile
+--- pcmcia-cs-3.2.8/clients/Makefile	2003-09-15 07:14:09.000000000 +0200
++++ pcmcia-cs-3.2.8-basic-config/clients/Makefile	2006-03-20 23:55:01.000000000 +0100
+@@ -15,8 +15,8 @@
+ 
+ SRCS    = serial_cs.c memory_cs.c ftl_cs.c dummy_cs.c \
+ 	  sram_mtd.c iflash2_mtd.c iflash2+_mtd.c
+-MODULES = serial_cs.o memory_cs.o ftl_cs.o dummy_cs.o \
+-	  sram_mtd.o iflash2_mtd.o iflash2+_mtd.o
++MODULES = 
++
+ EXTRA   =
+ I_EXTRA =
+ 
+diff -Nru pcmcia-cs-3.2.8/include/linux/compile.h pcmcia-cs-3.2.8-basic-config/include/linux/compile.h
+--- pcmcia-cs-3.2.8/include/linux/compile.h	2003-05-16 08:01:42.000000000 +0200
++++ pcmcia-cs-3.2.8-basic-config/include/linux/compile.h	2006-03-20 23:55:01.000000000 +0100
+@@ -1,6 +1,7 @@
+ #ifndef _PCMCIA_CONFIG_H
+ #define _PCMCIA_CONFIG_H
+ 
++#include_next <linux/config.h>
+ #define AUTOCONF_INCLUDED
+ #define __IN_PCMCIA_PACKAGE__
+ 
+diff -Nru pcmcia-cs-3.2.8/include/linux/config.h pcmcia-cs-3.2.8-basic-config/include/linux/config.h
+--- pcmcia-cs-3.2.8/include/linux/config.h	2003-05-16 08:01:42.000000000 +0200
++++ pcmcia-cs-3.2.8-basic-config/include/linux/config.h	2006-03-20 23:55:01.000000000 +0100
+@@ -1,6 +1,7 @@
+ #ifndef _PCMCIA_CONFIG_H
+ #define _PCMCIA_CONFIG_H
+ 
++#include_next <linux/config.h>
+ #define AUTOCONF_INCLUDED
+ #define __IN_PCMCIA_PACKAGE__
+ 
+diff -Nru pcmcia-cs-3.2.8/include/linux/version.h pcmcia-cs-3.2.8-basic-config/include/linux/version.h
+--- pcmcia-cs-3.2.8/include/linux/version.h	2003-05-16 08:01:42.000000000 +0200
++++ pcmcia-cs-3.2.8-basic-config/include/linux/version.h	2006-03-20 23:55:01.000000000 +0100
+@@ -1,6 +1,7 @@
+ #ifndef _PCMCIA_CONFIG_H
+ #define _PCMCIA_CONFIG_H
+ 
++#include_next <linux/config.h>
+ #define AUTOCONF_INCLUDED
+ #define __IN_PCMCIA_PACKAGE__
+ 
+diff -Nru pcmcia-cs-3.2.8/include/pcmcia/config.h pcmcia-cs-3.2.8-basic-config/include/pcmcia/config.h
+--- pcmcia-cs-3.2.8/include/pcmcia/config.h	2003-05-16 08:01:42.000000000 +0200
++++ pcmcia-cs-3.2.8-basic-config/include/pcmcia/config.h	2006-03-20 23:55:01.000000000 +0100
+@@ -1,6 +1,7 @@
+ #ifndef _PCMCIA_CONFIG_H
+ #define _PCMCIA_CONFIG_H
+ 
++#include_next <linux/config.h>
+ #define AUTOCONF_INCLUDED
+ #define __IN_PCMCIA_PACKAGE__
+ 
+diff -Nru pcmcia-cs-3.2.8/include/static/linux/compile.h pcmcia-cs-3.2.8-basic-config/include/static/linux/compile.h
+--- pcmcia-cs-3.2.8/include/static/linux/compile.h	2003-05-16 08:01:42.000000000 +0200
++++ pcmcia-cs-3.2.8-basic-config/include/static/linux/compile.h	2006-03-20 23:55:01.000000000 +0100
+@@ -1,6 +1,7 @@
+ #ifndef _PCMCIA_CONFIG_H
+ #define _PCMCIA_CONFIG_H
+ 
++#include_next <linux/config.h>
+ #define AUTOCONF_INCLUDED
+ #define __IN_PCMCIA_PACKAGE__
+ 
+diff -Nru pcmcia-cs-3.2.8/include/static/linux/config.h pcmcia-cs-3.2.8-basic-config/include/static/linux/config.h
+--- pcmcia-cs-3.2.8/include/static/linux/config.h	2003-05-16 08:01:42.000000000 +0200
++++ pcmcia-cs-3.2.8-basic-config/include/static/linux/config.h	2006-03-20 23:55:01.000000000 +0100
+@@ -1,6 +1,7 @@
+ #ifndef _PCMCIA_CONFIG_H
+ #define _PCMCIA_CONFIG_H
+ 
++#include_next <linux/config.h>
+ #define AUTOCONF_INCLUDED
+ #define __IN_PCMCIA_PACKAGE__
+ 
+diff -Nru pcmcia-cs-3.2.8/include/static/linux/version.h pcmcia-cs-3.2.8-basic-config/include/static/linux/version.h
+--- pcmcia-cs-3.2.8/include/static/linux/version.h	2003-05-16 08:01:42.000000000 +0200
++++ pcmcia-cs-3.2.8-basic-config/include/static/linux/version.h	2006-03-20 23:55:01.000000000 +0100
+@@ -1,6 +1,7 @@
+ #ifndef _PCMCIA_CONFIG_H
+ #define _PCMCIA_CONFIG_H
+ 
++#include_next <linux/config.h>
+ #define AUTOCONF_INCLUDED
+ #define __IN_PCMCIA_PACKAGE__
+ 
+diff -Nru pcmcia-cs-3.2.8/modules/Makefile pcmcia-cs-3.2.8-basic-config/modules/Makefile
+--- pcmcia-cs-3.2.8/modules/Makefile	2003-11-09 08:02:52.000000000 +0100
++++ pcmcia-cs-3.2.8-basic-config/modules/Makefile	2006-03-20 23:55:01.000000000 +0100
+@@ -7,7 +7,7 @@
+ # Include site dependent options and kernel configuration
+ include ../config.mk
+ 
+-CPPFLAGS += $(PCDEBUG) -D__KERNEL__ -DMODULE
++CPPFLAGS += $(PCDEBUG) -D__KERNEL__ -DMODULE -I$(LINUX)/arch/ppc
+ CC = $(KCC) $(AFLAGS) $(KFLAGS)
+ 
+ SRCS    = cs.c cistpl.c rsrc_mgr.c bulkmem.c ds.c
+diff -Nru pcmcia-cs-3.2.8/wireless/Makefile pcmcia-cs-3.2.8-basic-config/wireless/Makefile
+--- pcmcia-cs-3.2.8/wireless/Makefile	2003-01-12 22:29:32.000000000 +0100
++++ pcmcia-cs-3.2.8-basic-config/wireless/Makefile	2006-03-20 23:55:01.000000000 +0100
+@@ -7,23 +7,17 @@
+ # Include site dependent options and kernel configuration
+ include ../config.mk
+ 
+-CPPFLAGS += $(PCDEBUG) -D__KERNEL__ -DMODULE
++CPPFLAGS += $(PCDEBUG) -D__KERNEL__ -DMODULE -I$(LINUX)/arch/ppc
+ CC = $(KCC) $(AFLAGS) $(KFLAGS)
+ 
+-MODULES = netwave_cs.o wavelan_cs.o ray_cs.o wvlan_cs.o airo_cs.o airo.o
+-SRCS    = netwave_cs.c wavelan_cs.c ray_cs.c airo_cs.c airo.c \
+-	  wvlan_cs.c wvlan_hcf.c wvlan_hcfio.c
++MODULES = 
++SRCS    = 
+ 
+-ifdef DO_ORINOCO
+ MODULES += hermes.o orinoco.o orinoco_cs.o orinoco_plx.o
+ SRCS    += hermes.c orinoco.c orinoco_cs.c orinoco_plx.c
+-endif
+ 
+ all:	$(MODULES)
+ 
+-wvlan_cs.o: wvlan_base.o wvlan_hcf.o wvlan_hcfio.o
+-	$(LD) -r -o $@ $+ ; chmod -x $@
+-
+ clean:
+ 	rm -f core core.* *.o .*.o *.s *.a *~ .depend .depfiles/*.d
+ 

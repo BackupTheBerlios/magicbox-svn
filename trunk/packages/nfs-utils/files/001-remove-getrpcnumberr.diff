@@ -1,0 +1,40 @@
+--- nfs-utils-1.0.7/support//nfs/svc_socket.c.orig	2002-09-13 05:50:56.000000000 +0200
++++ nfs-utils-1.0.7/support/nfs/svc_socket.c	2006-04-30 23:38:50.000000000 +0200
+@@ -40,7 +40,7 @@
+   struct sockaddr_in addr;
+   socklen_t len = sizeof (struct sockaddr_in);
+   char rpcdata [1024], servdata [1024];
+-  struct rpcent rpcbuf, *rpcp;
++  struct rpcent rpcbuf, *rpcp, *rpcp2;
+   struct servent servbuf, *servp;
+   int sock, ret;
+   const char *proto = protocol == IPPROTO_TCP ? "tcp" : "udp";
+@@ -65,20 +65,23 @@
+ 
+   __bzero ((char *) &addr, sizeof (addr));
+   addr.sin_family = AF_INET;
+-
++  /*
+   ret = getrpcbynumber_r (number, &rpcbuf, rpcdata, sizeof rpcdata,
+ 			  &rpcp);
+-  if (ret == 0 && rpcp != NULL)
++  */
++  rpcp2 = getrpcbynumber (number);
++
++  if (rpcp2 != NULL)
+     {
+       /* First try name.  */
+-      ret = getservbyname_r (rpcp->r_name, proto, &servbuf, servdata,
++      ret = getservbyname_r (rpcp2->r_name, proto, &servbuf, servdata,
+ 			     sizeof servdata, &servp);
+-      if ((ret != 0 || servp == NULL) && rpcp->r_aliases)
++      if ((ret != 0 || servp == NULL) && rpcp2->r_aliases)
+ 	{
+ 	  const char **a;
+ 
+ 	  /* Then we try aliases.  */
+-	  for (a = (const char **) rpcp->r_aliases; *a != NULL; a++) 
++	  for (a = (const char **) rpcp2->r_aliases; *a != NULL; a++) 
+ 	    {
+ 	      ret = getservbyname_r (*a, proto, &servbuf, servdata,
+ 				     sizeof servdata, &servp);

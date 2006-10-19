@@ -1,0 +1,4 @@
+GCC build notes
+===============
+Before compiling gcc you need to copy "powerpc-runtime/*" to
+"$prefix/$target".
