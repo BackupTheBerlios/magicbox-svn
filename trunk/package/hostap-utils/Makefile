@@ -14,7 +14,7 @@ endef
 define PackageInstall
 $(call InstallSbin,$(PKG_WORKDIR)/hostap_crypt_conf,hostap_crypt_conf)
 $(call InstallSbin,$(PKG_WORKDIR)/hostap_diag,hostap_diag)
-$(call InstallFile,$(PKG_WORKDIR)/prism2_param,etc,prism2_param,0755)
+$(call InstallFile,$(PKG_WORKDIR)/prism2_param,sbin,prism2_param,0755)
 $(call InstallSbin,$(PKG_WORKDIR)/prism2_srec,prism2_srec)
 endef
 
