@@ -1,8 +1,8 @@
 # madwifi-old
 
-PKG_NAME:=		madwifi-old
+PKG_NAME:=		madwifi
 PKG_VER:=		current
-PKG_FILE:=		$(PKG_NAME)-$(PKG_VER).tar.gz
+PKG_FILE:=		madwifi-old-$(PKG_VER).tar.gz
 PKG_SOURCE:=		http://snapshots.madwifi.org/$(PKG_FILE)
 PKG_PACK_DIR:=		madwifi-old-r????-????????
 PKG_UNPACK:=		tar_gz

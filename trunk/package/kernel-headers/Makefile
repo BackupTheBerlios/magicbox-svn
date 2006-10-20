@@ -1,11 +1,10 @@
 # linux-headers-2.4
 
 PKG_NAME:=		kernel-headers
-PKG_VER:=		2.x
-PKG_KERNEL_VER:=	2.4.33
-PKG_FILE:=		linux-$(PKG_KERNEL_VER).tar.bz2
+PKG_VER:=		2.4.33
+PKG_FILE:=		linux-$(PKG_VER).tar.bz2
 PKG_SOURCE:=		http://kernel.org/pub/linux/kernel/v2.4/$(PKG_FILE)
-PKG_PACK_DIR:=		linux-$(PKG_KERNEL_VER)
+PKG_PACK_DIR:=		linux-$(PKG_VER)
 PKG_UNPACK:=		tar_bz2
 PKG_NO_BINARY:=		yes
 

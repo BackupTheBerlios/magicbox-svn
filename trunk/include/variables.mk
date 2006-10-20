@@ -23,8 +23,8 @@ SCRIPTS_DIR:=		$(TOPDIR)/scripts
 OBJ_DIR:=		$(TOPDIR)/obj
 FETCH_DIR:=		$(TOPDIR)/fetch
 
-KERNEL_BUILD_DIR:=	$(BUILD_DIR)/kernel-2.x
-KERNEL_HEADERS_DIR:=	$(BUILD_DIR)/kernel-headers-2.x
+KERNEL_BUILD_DIR:=	$(BUILD_DIR)/kernel
+KERNEL_HEADERS_DIR:=	$(BUILD_DIR)/kernel-headers
 
 PKG_DIR:=		$(shell pwd)
 ifndef PKG_FILES_DIR

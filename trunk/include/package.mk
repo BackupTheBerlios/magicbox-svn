@@ -50,18 +50,25 @@ endif
 unpack:			$(PKG_STAMP)/.unpack
 
 $(PKG_STAMP)/.unpack:	$(PKG_FILEPATH)
+			mkdir -p $(BUILD_DIR)/unpacking
+			rm -rf $(PKG_WORKDIR) $(BUILD_DIR)/$(PKG_NAME)
 ifeq ($(PKG_UNPACK),tar_gz)
-			cd $(BUILD_DIR) && tar xzf $(word 1,$(PKG_FILEPATH))
+			cd $(BUILD_DIR)/unpacking && tar xzf $(word 1,$(PKG_FILEPATH))
 endif
 ifeq ($(PKG_UNPACK),tar_bz2)
-			cd $(BUILD_DIR) && tar xjf $(word 1,$(PKG_FILEPATH))
+			cd $(BUILD_DIR)/unpacking && tar xjf $(word 1,$(PKG_FILEPATH))
 endif
 ifeq ($(PKG_UNPACK),zip)
-			cd $(BUILD_DIR) && unzip $(word 1,$(PKG_FILEPATH))
+			cd $(BUILD_DIR)/unpacking && unzip $(word 1,$(PKG_FILEPATH))
 endif
 ifdef PKG_PACK_DIR
-			cd $(BUILD_DIR) && mv $(PKG_PACK_DIR) $(PKG_WORKDIR)
+			cd $(BUILD_DIR)/unpacking && mv $(PKG_PACK_DIR) $(PKG_WORKDIR)
+else
+ifdef PKG_UNPACK
+			cd $(BUILD_DIR)/unpacking && mv $(PKG_NAME)-$(PKG_VER) $(PKG_WORKDIR)
 endif
+endif
+			cd $(BUILD_DIR) && ln -s $(PKG_WORKDIR) $(PKG_NAME)
 ifdef PackageUnpack
 			$(call PackageUnpack)
 endif
@@ -81,7 +88,7 @@ endif
 
 # CLEAN ################################################################
 clean:
-			rm -rf $(PKG_WORKDIR) $(PKG_TMP)
+			rm -rf $(PKG_WORKDIR) $(PKG_TMP) $(BUILD_DIR)/$(PKG_NAME) $(BUILD_DIR)/unpacking
 ifdef PackageClean
 			$(call PackageClean)
 endif

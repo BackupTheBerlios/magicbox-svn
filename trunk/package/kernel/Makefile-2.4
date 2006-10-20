@@ -1,18 +1,17 @@
 # linux-2.4
 
 PKG_NAME:=		kernel
-PKG_VER:=		2.x
-PKG_KERNEL_VER:=	2.4.33
+PKG_VER:=		2.4.33
 PKG_KERNEL_BUILDVER:=	2.4.33-magicbox1
-PKG_FILE:=		linux-$(PKG_KERNEL_VER).tar.bz2
+PKG_FILE:=		linux-$(PKG_VER).tar.bz2
 PKG_SOURCE:=		http://kernel.org/pub/linux/kernel/v2.4/$(PKG_FILE)
-PKG_PACK_DIR:=		linux-$(PKG_KERNEL_VER)
+PKG_PACK_DIR:=		linux-$(PKG_VER)
 PKG_UNPACK:=		tar_bz2
 PKG_FILES_DIR=		$(PKG_DIR)/files-2.4
 
 
 define PackagePatch
-cd $(PKG_WORKDIR) && patch -p1 < $(PKG_FILES_DIR)/000-fix-makefile-$(PKG_KERNEL_VER).patch
+cd $(PKG_WORKDIR) && patch -p1 < $(PKG_FILES_DIR)/000-fix-makefile-$(PKG_VER).patch
 cd $(PKG_WORKDIR) && patch -p1 < $(PKG_FILES_DIR)/magicbox-board-2.4.32.patch
 cd $(PKG_WORKDIR) && patch -p1 < $(PKG_FILES_DIR)/magicbox-flashmap-2.4.32.patch
 cd $(PKG_WORKDIR) && patch -p1 < $(PKG_FILES_DIR)/010-load-ramdisk-even-if-rootdev-equal-ram0-2.4.32.patch

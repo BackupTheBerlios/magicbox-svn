@@ -4,7 +4,6 @@ PKG_NAME:=		device-nodes
 PKG_VER:=		current
 PKG_FILE:=		$(PKG_NAME)_$(PKG_VER).tgz
 PKG_SOURCE:=		ftp://ftp.magicbox.pl/magicbox/source/tarballs/$(PKG_FILE)
-PKG_UNPACK:=		do-not-unpack
 PKG_NO_BINARY:=		yes
 
 define PackagePackage

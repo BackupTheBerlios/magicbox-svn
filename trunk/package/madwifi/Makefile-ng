@@ -1,6 +1,6 @@
 # madwifi-ng
 
-PKG_NAME:=		madwifi-ng
+PKG_NAME:=		madwifi
 PKG_VER:=		0.9.2
 PKG_FILE:=		madwifi-$(PKG_VER).tar.bz2
 PKG_SOURCE:=		http://surfnet.dl.sf.net/sourceforge/madwifi/$(PKG_FILE)
