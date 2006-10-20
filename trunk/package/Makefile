@@ -81,7 +81,7 @@ all:
 	@echo
 	@echo "Total destruction targets:"
 	@echo "  all/clean                  - clean package build dirs"
-	@echo "  all/pkgclean               - remove every binary packages"
+	@echo "  all/pkgclean               - remove all binary packages"
 	@echo "  all/distclean              - prune every package"
 	@echo "  all/clobber                - same as all/distclean"
 	@echo

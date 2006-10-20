@@ -15,7 +15,7 @@ Directory structure and important files
   fetch/      -- source tarballs
   misc/       -- random stuff (hermesap patch, pcmcia-cs+hermesap, etc.)
   obj/        -- compiled stuff (kernel, ramdisk image)
-  packages/   -- packages to build
+  package/    -- packages to build
   scripts/    -- helper script(s)
   toolchain/  -- (obsolete) Makefile to build compiler and linker
 

@@ -27,35 +27,21 @@ all:
 
 help:	all
 
-fetch:
-		$(MAKE) -C packages all/fetch
-
-packages:
-		$(MAKE) -C packages all/package
-
-kernel:
-		$(MAKE) -C packages kernel/package
+fetch:		package/all/fetch
+packages:	package/all/package
+kernel:		package/kernel/package
 
 image:		packages
 		$(FAKEROOT) make -C obj image
 
 world:		fetch packages image
-
-world/clean:	
-		$(MAKE) -C packages all/clean
-		$(MAKE) -C obj clean
-
-world/pkgclean:	
-		$(MAKE) -C packages all/pkgclean
-
-world/distclean:	
-		$(MAKE) -C packages all/distclean
-		$(MAKE) -C obj distclean
-
+world/clean:	package/all/clean image/clean
+world/pkgclean:	package/all/pkgclean
+world/distclean:	package/all/distclean image/distclean
 world/clobber:		world/distclean
 
 package/%:	
-		$(MAKE) -C packages $*
+		$(MAKE) -C package $*
 
 image/%:	
 		$(MAKE) -C obj $*
