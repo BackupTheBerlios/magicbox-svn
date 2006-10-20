@@ -55,6 +55,7 @@ obj-$(CONFIG_WIRELESS_TOOLS)	+= wireless-tools
 
 # Utilities
 obj-$(CONFIG_HOSTAP_UTILS)	+= hostap-utils
+obj-$(CONFIG_HOSTAPD)		+= hostapd
 obj-$(CONFIG_IPTRAF)		+= iptraf
 obj-$(CONFIG_PCIUTILS)		+= pciutils
 obj-$(CONFIG_L7_PROTOCOLS)	+= l7-protocols
