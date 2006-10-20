@@ -3,7 +3,7 @@
 PKG_NAME:=		dropbear
 PKG_VER:=		0.48.1
 PKG_FILE:=		$(PKG_NAME)-$(PKG_VER).tar.gz
-PKG_SOURCE:=		http://matt.ucc.asn.au/dropbear/releases/$(PKG_NAME)
+PKG_SOURCE:=		http://matt.ucc.asn.au/dropbear/releases/$(PKG_FILE)
 PKG_UNPACK:=		tar_gz
 
 define PackageBuild
