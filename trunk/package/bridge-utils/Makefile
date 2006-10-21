@@ -7,7 +7,7 @@ PKG_UNPACK:=		tar_gz
 define PackageBuild
 cd $(PKG_WORKDIR) && \
 CFLAGS="$(PKG_CFLAGS)" ./configure --build=$(BUILDARCH) --host=$(HOSTARCH)  --prefix=/
-$(MAKE) -C $(PKG_WORKDIR)
+$(MAKE) -C $(PKG_WORKDIR) KERNEL_HEADERS=$(KERNEL_BUILD_DIR)
 endef
 
 define PackageInstall
