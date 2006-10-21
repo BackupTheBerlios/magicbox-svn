@@ -67,5 +67,6 @@ IMAGE_FORMAT_SQUASHFS=y
 IMAGE_NO_CATMAN=y
 
 # Toolchain ############################################################
+CONFIG_TOOLCHAIN_FAKEROOT=y
 CONFIG_TOOLCHAIN_MKIMAGE=y
 CONFIG_TOOLCHAIN_SQUASHFS=y

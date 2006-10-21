@@ -7,6 +7,7 @@ include $(TOPDIR)/Config
 include $(TOPDIR)/include/variables.mk
 
 obj-y					=
+obj-$(CONFIG_TOOLCHAIN_FAKEROOT)	+= fakeroot
 obj-$(CONFIG_TOOLCHAIN_MKIMAGE)		+= mkimage
 obj-$(CONFIG_TOOLCHAIN_SQUASHFS)	+= squashfs
 
