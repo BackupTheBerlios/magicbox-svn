@@ -77,8 +77,7 @@ all:
 	@echo "  */distclean                - prune package"
 	@echo "  */clobber                  - same as distclean"
 	@echo
-	@echo "Asterisk ('*') denotes package name.  You can also use word 'all'"
-	@echo "as package name with all targets but clean and distclean"
+	@echo "Asterisk ('*') denotes package name, you can also use word 'all'."
 	@echo
 	@echo "Total destruction targets:"
 	@echo "  all/clean                  - clean package build dirs"
