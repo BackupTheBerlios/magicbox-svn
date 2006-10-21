@@ -21,8 +21,12 @@ endif
 install:		$(PKG_STAMP)/.install
 
 $(PKG_STAMP)/.install:	$(PKG_STAMP)/.build
+ifneq ($(PKG_TOOLCHAIN),yes)
 			rm -rf $(PKG_TMP)
 			install -d -m755 $(PKG_TMP)
+else
+			install -d -m755 $(TOOLCHAIN_DIR)
+endif
 ifdef PackageInstall
 			$(call PackageInstall)
 endif
@@ -94,7 +98,9 @@ ifdef PackageClean
 endif
 
 pkgclean:
+ifneq ($(PKG_TOOLCHAIN),yes)
 			rm -rf $(PKG_BIN)
+endif
 ifdef PackagePkgClean
 			$(call PackagePkgClean)
 endif

@@ -19,9 +19,10 @@ BIN_DIR:=		$(TOPDIR)/build/pkg
 BUILD_DIR:=		$(TOPDIR)/build/compile
 INSTALL_DIR:=		$(TOPDIR)/build/install
 STAMP_DIR:=		$(TOPDIR)/build/stamp
-SCRIPTS_DIR:=		$(TOPDIR)/scripts
-OBJ_DIR:=		$(TOPDIR)/obj
+TOOLCHAIN_DIR:=		$(TOPDIR)/build/toolchain
 FETCH_DIR:=		$(TOPDIR)/fetch
+OBJ_DIR:=		$(TOPDIR)/obj
+SCRIPTS_DIR:=		$(TOPDIR)/scripts
 
 KERNEL_BUILD_DIR:=	$(BUILD_DIR)/kernel
 KERNEL_HEADERS_DIR:=	$(BUILD_DIR)/kernel-headers
