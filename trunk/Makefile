@@ -37,6 +37,7 @@ image:		packages
 world:		fetch packages image
 world/clean:	package/all/clean image/clean
 world/pkgclean:	package/all/pkgclean
+		rm -f $(BIN_DIR)/*
 world/distclean:	package/all/distclean image/distclean
 world/clobber:		world/distclean
 
