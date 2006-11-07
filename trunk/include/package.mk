@@ -92,21 +92,21 @@ endif
 
 # CLEAN ################################################################
 clean:
-			rm -rf $(PKG_WORKDIR) $(PKG_TMP) $(BUILD_DIR)/$(PKG_NAME) $(BUILD_DIR)/unpacking
+			rm -rf $(PKG_WORKDIR) $(BUILD_DIR)/$(PKG_NAME) $(BUILD_DIR)/unpacking
 ifdef PackageClean
 			$(call PackageClean)
 endif
 
 pkgclean:
 ifneq ($(PKG_TOOLCHAIN),yes)
-			rm -rf $(PKG_BIN)
+			rm -f $(PKG_BIN)
 endif
 ifdef PackagePkgClean
 			$(call PackagePkgClean)
 endif
 
 distclean:		clean pkgclean
-			rm -rf $(PKG_STAMP)
+			rm -rf $(PKG_TMP) $(PKG_STAMP)
 ifdef PackageDistclean
 			$(call PackageDistclean)
 endif
