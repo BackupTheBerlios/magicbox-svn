@@ -18,7 +18,7 @@ $(MAKE) -C $(PKG_WORKDIR)
 endef
 
 define PackageInstall
-$(call InstallFile,$(PKG_FILES_DIR)/tcpdump.group,var/lib/tcpdump/etc,group,0644)
+$(call InstallFile,$(PKG_FILES_DIR)/tcpdump.group,share/var/lib/tcpdump/etc,group,0644)
 $(call InstallSbin,$(PKG_WORKDIR)/tcpdump,tcpdump)
 $(call InstallMan,$(PKG_WORKDIR)/tcpdump.1,tcpdump)
 endef
