@@ -10,7 +10,7 @@ PKG_UNPACK:=		tar_gz
 define PackageBuild
 cd $(PKG_WORKDIR) && \
 CFLAGS="$(PKG_CFLAGS)" CC="$(PKG_CC)" ./configure --prefix=/
-$(MAKE) -C $(PKG_WORKDIR) CCOPT="$(PKG_CFLAGS)"
+$(MAKE) -C $(PKG_WORKDIR) CCOPT="$(PKG_CFLAGS)" STATICFLAG=""
 endef
 
 define PackageInstall
