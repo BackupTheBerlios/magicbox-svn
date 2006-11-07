@@ -48,7 +48,7 @@ endif
 image/build:	checkroot image/postinstall
 ifeq ($(IMAGE_FORMAT_SQUASHFS),y)
 		cd $(IMAGE_DIR) && mksquashfs . $(TOPDIR)/build/image.bin -be -all-root
-		mkimage -A ppc -O linux -T ramdisk -C none -n \"image-`basename $(IMAGE_DIR)/lib/modules/*`\" -d $(TOPDIR)/build/image.bin $(OBJ_DIR)/image.squashfs
+		mkimage -A ppc -O linux -T ramdisk -C none -n "image-`basename $(IMAGE_DIR)/lib/modules/*`" -d $(TOPDIR)/build/image.bin $(OBJ_DIR)/image.squashfs
 		rm $(TOPDIR)/build/image.bin
 endif
 
