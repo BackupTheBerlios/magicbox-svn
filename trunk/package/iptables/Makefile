@@ -2,15 +2,24 @@
 
 PKG_NAME:=		iptables
 PKG_VER:=		1.3.6
-PKG_FILE:=		$(PKG_NAME)-$(PKG_VER).tar.bz2
-PKG_SOURCE:=		ftp://ftp.netfilter.org/pub/iptables/$(PKG_FILE)
+IPP2P_VER:=		0.8.2
+PKG_FILE:=		$(PKG_NAME)-$(PKG_VER).tar.bz2 \
+			ipp2p-$(IPP2P_VER).tar.gz
+PKG_SOURCE:=		ftp://ftp.netfilter.org/pub/iptables/$(word 1,$(PKG_FILE))\
+			http://ipp2p.org/downloads/$(word 2,$(PKG_FILE))
 PKG_UNPACK:=		tar_bz2
 
 
 define PackagePatch
 cd $(PKG_WORKDIR) && \
-patch -p1 <$(PKG_FILES_DIR)/iptables-layer7-2.6.patch && \
-chmod 755 extensions/.layer7-test
+  patch -p1 <$(PKG_FILES_DIR)/iptables-layer7-2.6.patch && \
+  chmod 755 extensions/.layer7-test
+cd $(PKG_WORKDIR) && \
+  tar xzvf $(FETCH_DIR)/$(word 2,$(PKG_FILE)) && \
+  cp -i ipp2p-$(IPP2P_VER)/*ipp2p.[ch] ./extensions && \
+  printf '#!/bin/sh\necho ipp2p\n' > ./extensions/.ipp2p-test && \
+  chmod +x ./extensions/.ipp2p-test && \
+  rm -rf ipp2p-$(IPP2P_VER)
 endef
 
 define PackageBuild
