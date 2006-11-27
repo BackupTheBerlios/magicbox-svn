@@ -1,12 +1,30 @@
 # madwifi-ng
 
+include $(TOPDIR)/Config
+
 PKG_NAME:=		madwifi
+PKG_MADWIFI_TARGET:=	powerpc-be-eabi
+
+ifeq ($(CONFIG_MADWIFI_FLAVOUR),ng-svn)
+PKG_VER:=		svn
+else
 PKG_VER:=		0.9.2
 PKG_FILE:=		madwifi-$(PKG_VER).tar.bz2
 PKG_SOURCE:=		http://surfnet.dl.sf.net/sourceforge/madwifi/$(PKG_FILE)
 PKG_PACK_DIR:=		madwifi-$(PKG_VER)
 PKG_UNPACK:=		tar_bz2
-PKG_MADWIFI_TARGET:=	powerpc-be-eabi
+endif
+
+
+ifeq ($(CONFIG_MADWIFI_FLAVOUR),ng-svn)
+define PackageUnpack
+mkdir -p $(BUILD_DIR)/fetching
+cd $(BUILD_DIR)/fetching && svn co http://svn.madwifi.org/trunk madwifi-$(PKG_VER)
+rm -f $(BUILD_DIR)/madwifi-$(PKG_VER)
+mv $(BUILD_DIR)/fetching/madwifi-$(PKG_VER) $(BUILD_DIR)/madwifi-$(PKG_VER)
+rmdir $(BUILD_DIR)/fetching
+endef
+endif
 
 
 define PackageBuild
