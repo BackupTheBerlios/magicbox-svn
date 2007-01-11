@@ -32,13 +32,14 @@ $(MAKE) -C $(PKG_WORKDIR) CC=$(PKG_CC)
 endef
 
 define PackageInstall
-$(call InstallDir,share/var/run/hostapd)
 $(call InstallSbin,$(PKG_WORKDIR)/hostapd,hostapd)
 $(call InstallSbin,$(PKG_WORKDIR)/hostapd_cli,hostapd_cli)
-$(call InstallFile,$(PKG_WORKDIR)/madwifi.conf,share/etc,hostapd.conf.example,0644)
-$(call InstallFile,$(PKG_WORKDIR)/hostapd.accept,share/etc,hostapd.accept.example,0644)
-$(call InstallFile,$(PKG_WORKDIR)/hostapd.deny,share/etc,hostapd.deny.example,0644)
-$(call InstallFile,$(PKG_WORKDIR)/hostapd.wpa_psk,share/etc,hostapd.wpa_psk.example,0644)
+$(call InstallFile,$(PKG_WORKDIR)/madwifi.conf,etc,hostapd.conf.example,0644)
+$(call InstallFile,$(PKG_WORKDIR)/hostapd.accept,etc,hostapd.accept.example,0644)
+$(call InstallFile,$(PKG_WORKDIR)/hostapd.deny,etc,hostapd.deny.example,0644)
+$(call InstallFile,$(PKG_WORKDIR)/hostapd.wpa_psk,etc,hostapd.wpa_psk.example,0644)
+$(call InstallFile,$(PKG_FILES_DIR)/hostapd,etc/boot.d,hostapd,0755)
+#$(call InstallDir,var/run/hostapd)
 $(call InstallMan,$(PKG_WORKDIR)/hostapd.8,hostapd)
 $(call InstallMan,$(PKG_WORKDIR)/hostapd_cli.1,hostapd_cli)
 endef

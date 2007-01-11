@@ -17,8 +17,8 @@ $(MAKE) -C $(PKG_WORKDIR) CC=$(PKG_CC) COPTS="$(PKG_CFLAGS)"
 endef
 
 define PackageInstall
-$(call InstallDir,share/var/state/dhcp)
-touch $(PKG_TMP)/share/var/state/dhcp/dhcpd.leases
+$(call InstallDir,var/state/dhcp)
+touch $(PKG_TMP)/var/state/dhcp/dhcpd.leases
 $(call InstallSbin,$(PKG_WORKDIR)/server/dhcpd,dhcpd)
 $(call InstallMan,$(PKG_WORKDIR)/server/dhcpd.8,dhcpd)
 $(call InstallMan,$(PKG_WORKDIR)/server/dhcpd.conf.5,dhcpd.conf)

@@ -12,12 +12,13 @@ cp $(PKG_FILES_DIR)/Makefile.support $(PKG_WORKDIR)/support/Makefile
 endef
 
 define PackageBuild
-$(MAKE) -C $(PKG_WORKDIR)/src WORKDIR=/var/lib/iptraf TARGET=/bin \
-  CFLAGS="$(PKG_CFLAGS)" CC=$(PKG_CC)
+$(MAKE) -C $(PKG_WORKDIR)/src WORKDIR=/var/lib/iptraf \
+  LOGDIR=$(PKG_PREFIX)/var/log/iptraf \
+  TARGET=$(PKG_PREFIX)/bin CFLAGS="$(PKG_CFLAGS)" CC=$(PKG_CC)
 endef
 
 define PackageInstall
-$(call InstallDir,var/lib/iptraf)
+$(call InstallFile,$(PKG_FILES_DIR)/iptraf,etc/boot.d,iptraf,0755)
 $(call InstallDir,var/log/iptraf)
 $(call InstallSbin,$(PKG_WORKDIR)/src/iptraf,iptraf)
 $(call InstallMan,$(PKG_WORKDIR)/Documentation/iptraf.8,iptraf)

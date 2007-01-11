@@ -14,7 +14,7 @@ $(MAKE) -C $(PKG_WORKDIR) CCOPT="$(PKG_CFLAGS)" STATICFLAG=""
 endef
 
 define PackageInstall
-$(call InstallDir,share/var/www)
+$(call InstallDir,var/www)
 $(call InstallSbin,$(PKG_WORKDIR)/thttpd,thttpd)
 $(call InstallSbin,$(PKG_WORKDIR)/extras/htpasswd,htpasswd)
 $(call InstallMan,$(PKG_WORKDIR)/thttpd.8,thttpd)

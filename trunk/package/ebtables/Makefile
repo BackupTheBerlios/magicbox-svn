@@ -18,7 +18,7 @@ $(MAKE) -C $(PKG_WORKDIR) CC=$(PKG_CC) CFLAGS="$(PKG_CFLAGS) -Wall -Wunused"
 endef
 
 define PackageInstall
-$(call InstallFile,$(PKG_WORKDIR)/ethertypes,share/etc,ethertypes,0644)
+$(call InstallFile,$(PKG_WORKDIR)/ethertypes,etc,ethertypes,0644)
 $(call InstallSbin,$(PKG_WORKDIR)/ebtables,ebtables)
 $(call InstallMan,$(PKG_WORKDIR)/ebtables.8,ebtables)
 endef

@@ -11,14 +11,14 @@ PKG_UNPACK:=		tar_gz
 define PackagePatch
 cd $(PKG_WORKDIR)/lib && sed -e 's/uname -r/echo 2.6.18/' \
   -e 's/uname -m/echo ppc/' -e 's/^zlib=$5/zlib=no/' \
-  -e 's@^idsdir=.*@idsdir=/share/pciutils@' <configure >configure.new && \
+  -e "s@^idsdir=.*@idsdir=$(PKG_PREFIX)/share/pciutils@" <configure >configure.new && \
 mv configure.new configure && \
 chmod +x configure
 endef
 
 define PackageBuild
-$(MAKE) -C $(PKG_WORKDIR) CC=$(PKG_CC) OPT="$(PKG_CFLAGS)" PREFIX=/ \
-  SHAREDIR=/share/pciutils
+$(MAKE) -C $(PKG_WORKDIR) CC=$(PKG_CC) OPT="$(PKG_CFLAGS)" \
+  PREFIX=$(PKG_PREFIX) SHAREDIR=$(PKG_PREFIX)/share/pciutils
 endef
 
 define PackageInstall
@@ -27,7 +27,7 @@ $(call InstallBin,$(PKG_WORKDIR)/lspci,lspci)
 $(call InstallSbin,$(PKG_WORKDIR)/setpci,setpci)
 $(call InstallMan,$(PKG_WORKDIR)/lspci.man,lspci)
 $(call InstallMan,$(PKG_WORKDIR)/setpci.man,setpci)
-#call InstallFile,$(PKG_WORKDIR)/pci.ids,share/pciutils,pci.ids,0644
+$(call InstallFile,$(PKG_WORKDIR)/pci.ids,share/pciutils,pci.ids,0644)
 endef
 
 include $(TOPDIR)/include/package.mk

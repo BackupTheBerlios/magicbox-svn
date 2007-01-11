@@ -9,7 +9,7 @@ PKG_PACK_DIR:=		$(PKG_NAME)-v$(PKG_VER)-2
 
 
 define PackageBuild
-$(MAKE) -C $(PKG_WORKDIR) CC=$(PKG_CC) COPT_FLAGS=$(PKG_CFLAGS) PREFIX=/
+$(MAKE) -C $(PKG_WORKDIR) CC=$(PKG_CC) COPT_FLAGS=$(PKG_CFLAGS) PREFIX=$(PKG_PREFIX)
 endef
 
 define PackageInstall

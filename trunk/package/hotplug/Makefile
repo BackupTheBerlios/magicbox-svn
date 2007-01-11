@@ -15,9 +15,9 @@ endef
 define PackageInstall
 $(call InstallDir,var/firmware)
 $(call InstallFile,$(PKG_WORKDIR)/sbin/hotplug,sbin,hotplug,0755)
-$(call InstallFile,$(PKG_WORKDIR)/etc/hotplug.d/default/default.hotplug,share/etc/hotplug.d/default,default.hotplug,0755)
-$(call InstallFile,$(PKG_WORKDIR)/etc/hotplug/hotplug.functions,share/etc/hotplug,hotplug.functions,0644)
-$(call InstallFile,$(PKG_WORKDIR)/etc/hotplug/firmware.agent,share/etc/hotplug,firmware.agent,0755)
+$(call InstallFile,$(PKG_WORKDIR)/etc/hotplug.d/default/default.hotplug,etc/hotplug.d/default,default.hotplug,0755)
+$(call InstallFile,$(PKG_WORKDIR)/etc/hotplug/hotplug.functions,etc/hotplug,hotplug.functions,0644)
+$(call InstallFile,$(PKG_WORKDIR)/etc/hotplug/firmware.agent,etc/hotplug,firmware.agent,0755)
 endef
 
 include $(TOPDIR)/include/package.mk

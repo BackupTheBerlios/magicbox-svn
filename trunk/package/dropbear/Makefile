@@ -14,7 +14,7 @@ make -C $(PKG_WORKDIR) MULTI=1
 endef
 
 define PackageInstall
-$(call InstallDir,share/etc/dropbear)
+$(call InstallDir,etc/dropbear)
 $(call InstallSbin,$(PKG_WORKDIR)/dropbearmulti,dropbear)
 $(call InstallSymlink,sbin,dropbear,dropbearkey)
 $(call InstallDir,bin)

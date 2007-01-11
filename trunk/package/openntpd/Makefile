@@ -14,8 +14,8 @@ $(MAKE) -C $(PKG_WORKDIR)
 endef
 
 define PackageInstall
-$(call InstallDir,share/var/lib/openntpd)
-$(call InstallFile,$(PKG_FILES_DIR)/ntpd.conf,share/etc,ntpd.conf,0644)
+$(call InstallDir,var/lib/openntpd)
+$(call InstallFile,$(PKG_FILES_DIR)/ntpd.conf,etc,ntpd.conf,0644)
 $(call InstallSbin,$(PKG_WORKDIR)/ntpd,ntpd)
 $(call InstallMan,$(PKG_WORKDIR)/ntpd.8,ntpd)
 endef

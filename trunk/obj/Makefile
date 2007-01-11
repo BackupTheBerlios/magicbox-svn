@@ -32,8 +32,8 @@ image/prepare: checkroot $(PACKAGES)
 image/install:	checkroot image/prepare $(patsubst %,%/install,$(notdir $(PACKAGES)))
 
 image/postinstall:	checkroot image/install
-		date +%m%d%H%M%Y >> $(IMAGE_DIR)/share/etc/magicbox_version
-		date +%m%d%H%M%Y >> $(IMAGE_DIR)/share/etc/builddate
+		date +%m%d%H%M%Y >> $(IMAGE_DIR)/etc/magicbox_version
+		date +%m%d%H%M%Y >> $(IMAGE_DIR)/etc/builddate
 ifeq ($(IMAGE_NO_CATMAN),y)
 		rm -f $(IMAGE_DIR)/share/man/*
 endif

@@ -19,11 +19,11 @@ $(MAKE) -C $(PKG_WORKDIR) CC=$(PKG_CC) CCOPTS="$(PKG_CFLAGS) -D_GNU_SOURCE -Wstr
 endef
 
 define PackageInstall
-$(call InstallFile,$(PKG_WORKDIR)/etc/iproute2/rt_dsfield,share/etc/iproute2,rt_dsfield,0644)
-$(call InstallFile,$(PKG_WORKDIR)/etc/iproute2/rt_protos,share/etc/iproute2,rt_protos,0644)
-$(call InstallFile,$(PKG_WORKDIR)/etc/iproute2/rt_realms,share/etc/iproute2,rt_realms,0644)
-$(call InstallFile,$(PKG_WORKDIR)/etc/iproute2/rt_scopes,share/etc/iproute2,rt_scopes,0644)
-$(call InstallFile,$(PKG_WORKDIR)/etc/iproute2/rt_tables,share/etc/iproute2,rt_tables,0644)
+$(call InstallFile,$(PKG_WORKDIR)/etc/iproute2/rt_dsfield,etc/iproute2,rt_dsfield,0644)
+$(call InstallFile,$(PKG_WORKDIR)/etc/iproute2/rt_protos,etc/iproute2,rt_protos,0644)
+$(call InstallFile,$(PKG_WORKDIR)/etc/iproute2/rt_realms,etc/iproute2,rt_realms,0644)
+$(call InstallFile,$(PKG_WORKDIR)/etc/iproute2/rt_scopes,etc/iproute2,rt_scopes,0644)
+$(call InstallFile,$(PKG_WORKDIR)/etc/iproute2/rt_tables,etc/iproute2,rt_tables,0644)
 $(call InstallBin,$(PKG_WORKDIR)/ip/ip,ip)
 $(call InstallFile,$(PKG_WORKDIR)/ip/routel,bin,routel,0755)
 $(call InstallFile,$(PKG_WORKDIR)/ip/routef,sbin,routef,0755)

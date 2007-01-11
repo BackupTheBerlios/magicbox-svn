@@ -8,11 +8,10 @@ PKG_UNPACK:=		tar_gz
 
 
 define PackageBuild
-$(MAKE) -C $(PKG_WORKDIR) PREFIX=/ CC=$(PKG_CC) CFLAGS="$(PKG_CFLAGS)"
+$(MAKE) -C $(PKG_WORKDIR) PREFIX=$(PKG_PREFIX) CC=$(PKG_CC) CFLAGS="$(PKG_CFLAGS)"
 endef
 
 define PackageInstall
-$(call InstallDir,share/var/lib/misc)
 $(call InstallSbin,$(PKG_WORKDIR)/src/dnsmasq,dnsmasq)
 $(call InstallMan,$(PKG_WORKDIR)/man/dnsmasq.8,dnsmasq)
 endef

@@ -16,11 +16,11 @@ $(MAKE) -C $(PKG_WORKDIR) CC=$(PKG_CC) LIBS='' OPTIM=$(PKG_CFLAGS)
 endef
 
 define PackageInstall
-$(call InstallDir,share/etc/cron.d)
-rm -f $(PKG_TMP)/share/etc/crontab
-echo '# See crontab.conf(5)' >> $(PKG_TMP)/share/etc/crontab
-echo '# min hour day month day-of-week user command' >> $(PKG_TMP)/share/etc/crontab
-$(call InstallDir,share/var/spool/cron/crontabs)
+$(call InstallDir,etc/cron.d)
+rm -f $(PKG_TMP)/etc/crontab
+echo '# See crontab.conf(5)' >> $(PKG_TMP)/etc/crontab
+echo '# min hour day month day-of-week user command' >> $(PKG_TMP)/etc/crontab
+$(call InstallDir,var/spool/cron/crontabs)
 $(call InstallSbin,$(PKG_WORKDIR)/cron,cron)
 $(call InstallMan,$(PKG_WORKDIR)/crontab.5,crontab)
 $(call InstallMan,$(PKG_WORKDIR)/cron.8,cron)

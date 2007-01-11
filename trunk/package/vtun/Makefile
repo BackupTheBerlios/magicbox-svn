@@ -10,13 +10,13 @@ PKG_UNPACK:=		tar_gz
 
 define PackageBuild
 cd $(PKG_WORKDIR) && \
-CFLAGS="$(PKG_CFLAGS)" CC="$(PKG_CC)" ./configure --prefix=/ --build=$(BUILDARCH) --host=$(HOSTARCH) --disable-ssl --disable-lzo
+CFLAGS="$(PKG_CFLAGS)" CC="$(PKG_CC)" ./configure --prefix=$(PKG_PREFIX) --build=$(BUILDARCH) --host=$(HOSTARCH) --disable-ssl --disable-lzo
 $(MAKE) -C $(PKG_WORKDIR) CC="$(PKG_CC)"
 endef
 
 define PackageInstall
-$(call InstallFile,$(PKG_FILES_DIR)/vtund.client.conf,share/etc,vtund.client.conf,0644)
-$(call InstallFile,$(PKG_FILES_DIR)/vtund.server.conf,share/etc,vtund.server.conf,0644)
+$(call InstallFile,$(PKG_FILES_DIR)/vtund.client.conf,etc,vtund.client.conf,0644)
+$(call InstallFile,$(PKG_FILES_DIR)/vtund.server.conf,etc,vtund.server.conf,0644)
 $(call InstallSbin,$(PKG_WORKDIR)/vtund,vtund)
 $(call InstallMan,$(PKG_WORKDIR)/vtund.conf.5,vtund.conf)
 endef

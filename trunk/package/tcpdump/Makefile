@@ -11,16 +11,17 @@ PKG_UNPACK:=		tar_gz
 define PackageBuild
 cd $(PKG_WORKDIR) && \
 ac_cv_linux_vers=2 td_cv_buggygetaddrinfo=no CC=$(PKG_CC) \
-CFLAGS="$(PKG_CFLAGS)" ./configure --prefix=/ --host=$(HOSTARCH) \
+CFLAGS="$(PKG_CFLAGS)" ./configure --prefix=$(PKG_PREFIX) --host=$(HOSTARCH) \
 --build=$(BUILDARCH) --enable-ipv6 --disable-smb --with-user=tcpdump \
---with-chroot=/var/lib/tcpdump
+--with-chroot=/var/lib/tcpdump && \
+mv Makefile Makefile.orig && sed -e 's#-I/usr/include##g' <Makefile.orig >Makefile
 $(MAKE) -C $(PKG_WORKDIR)
 endef
 
 define PackageInstall
-$(call InstallFile,$(PKG_FILES_DIR)/tcpdump.group,share/var/lib/tcpdump/etc,group,0644)
 $(call InstallSbin,$(PKG_WORKDIR)/tcpdump,tcpdump)
 $(call InstallMan,$(PKG_WORKDIR)/tcpdump.1,tcpdump)
+$(call InstallFile,$(PKG_FILES_DIR)/tcpdump,etc/boot.d,tcpdump,0755)
 endef
 
 include $(TOPDIR)/include/package.mk

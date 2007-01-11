@@ -35,7 +35,14 @@ PKG_WORKDIR:=		$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VER)
 PKG_FILEPATH:=		$(patsubst %,$(FETCH_DIR)/%,$(PKG_FILE))
 PKG_TMP:=		$(INSTALL_DIR)/$(PKG_NAME)
 PKG_STAMP:=		$(STAMP_DIR)/$(PKG_NAME)
+
+ifeq ($(PKG_MODULE),y) 
+PKG_BIN:=		$(OBJ_DIR)/$(PKG_NAME).tgz
+PKG_PREFIX=		/usr
+else
 PKG_BIN:=		$(BIN_DIR)/$(PKG_NAME).tgz
+PKG_PREFIX=		/
+endif
 
 KERNEL_ENV:=		ARCH=ppc CROSS_COMPILE=$(PKG_TOOLCHAIN)
 # Do not set -- kernel build will create it with current version

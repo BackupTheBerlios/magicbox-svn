@@ -1,3 +1,3 @@
-share/var/tmp root root 1777
-share/etc/shadow root root 0640
-share/etc/sudoers root root 0440
+var/tmp root root 1777
+etc/shadow root root 0640
+etc/sudoers root root 0440

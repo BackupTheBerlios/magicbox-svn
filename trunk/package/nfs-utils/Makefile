@@ -15,7 +15,13 @@ endef
 
 define PackageBuild
 cd $(PKG_WORKDIR) && \
-CC=$(PKG_CC) CFLAGS="$(PKG_CFLAGS)" ./configure --enable-nfsv3 --with-prefix=/\
+CC=$(PKG_CC) CFLAGS="$(PKG_CFLAGS)" ./configure \
+  --enable-nfsv3 \
+  --with-prefix=$(PKG_PREFIX) \
+  --with-sysconfdir=$(PKG_PREFIX)/etc \
+  --with-localstatedir=$(PKG_PREFIX)/var \
+  --with-statedir=$(PKG_PREFIX)/var/lib/nfs \
+  --with-statduser=nobody \
   --build=i386-linux --host=powerpc-linux --disable-nfsv4 --disable-gss
 $(MAKE) -C $(PKG_WORKDIR) CC=$(PKG_CC)
 endef
@@ -24,11 +30,11 @@ define PackageInstall
 $(call InstallDir,var/lib/nfs)
 $(call InstallDir,var/lib/nfs/sm)
 $(call InstallDir,var/lib/nfs/sm.bak)
-touch $(PKG_TMP)/var/lib/nfs/etab
-touch $(PKG_TMP)/var/lib/nfs/rmtab
-touch $(PKG_TMP)/var/lib/nfs/state
-chmod 600 $(PKG_TMP)/var/lib/nfs/state
-touch $(PKG_TMP)/var/lib/nfs/xtab
+touch $(PKG_TMP)/$(PKG_PREFIX)/var/lib/nfs/etab
+touch $(PKG_TMP)/$(PKG_PREFIX)/var/lib/nfs/rmtab
+touch $(PKG_TMP)/$(PKG_PREFIX)/var/lib/nfs/state
+chmod 600 $(PKG_TMP)/$(PKG_PREFIX)/var/lib/nfs/state
+touch $(PKG_TMP)/$(PKG_PREFIX)/var/lib/nfs/xtab
 $(call InstallSbin,$(PKG_WORKDIR)/utils/exportfs/exportfs,exportfs)
 $(call InstallSbin,$(PKG_WORKDIR)/utils/statd/statd,rpc.statd)
 $(call InstallSbin,$(PKG_WORKDIR)/utils/lockd/lockd,rpc.lockd)

@@ -9,7 +9,7 @@ PKG_UNPACK:=		tar_bz2
 
 define PackageBuild
 cd $(PKG_WORKDIR) && \
-CFLAGS="$(PKG_CFLAGS)" ./configure --build=$(BUILDARCH) --host=$(HOSTARCH)
+CFLAGS="$(PKG_CFLAGS)" ./configure --build=$(BUILDARCH) --host=$(HOSTARCH) --prefix=$(PKG_PREFIX)
 $(MAKE) -C $(PKG_WORKDIR)
 endef
 

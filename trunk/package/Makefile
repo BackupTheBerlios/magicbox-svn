@@ -6,6 +6,7 @@ export TOPDIR
 include $(TOPDIR)/Config
 
 obj-y				=
+obj-m				=
 
 # Kernel related
 obj-$(CONFIG_KERNEL)		+= kernel
@@ -61,7 +62,7 @@ obj-$(CONFIG_PCIUTILS)		+= pciutils
 obj-$(CONFIG_L7_PROTOCOLS)	+= l7-protocols
 obj-$(CONFIG_STRACE)		+= strace
 obj-$(CONFIG_TCPDUMP)		+= tcpdump
-
+obj-$(CONFIG_NFS_UTILS)		+= nfs-utils
 
 
 all:
@@ -77,13 +78,12 @@ all:
 	@echo "  */distclean                - prune package"
 	@echo "  */clobber                  - same as distclean"
 	@echo
-	@echo "Asterisk ('*') denotes package name, you can also use word 'all'."
+	@echo "Asterisk ('*') denotes package name.  You can also use:"
+	@echo "  all                        - for builtin (=y) packages"
+	@echo "  mod                        - for external (=m) packages."
 	@echo
-	@echo "Total destruction targets:"
-	@echo "  all/clean                  - clean package build dirs"
-	@echo "  all/pkgclean               - remove all binary packages"
-	@echo "  all/distclean              - prune every package"
-	@echo "  all/clobber                - same as all/distclean"
+	@echo "Note that all/distclean works as advertised."
+	@echo "(all/distclean can also be called Total Destruction Target.)"
 	@echo
 
 help:	all
@@ -115,8 +115,7 @@ help:	all
 %/distclean:	%/Makefile
 		$(MAKE) -C $* distclean
 
-%/clobber:	%/Makefile
-		$(MAKE) -C $* clobber
+%/clobber:	%/distclean
 
 
 all/fetch:		$(patsubst %,%/fetch,$(obj-y))
@@ -130,8 +129,42 @@ all/pkgclean:		$(patsubst %,%/pkgclean,$(obj-y))
 all/distclean:		$(patsubst %,%/distclean,$(obj-y))
 all/clobber:		all/distclean
 
-
 %/depend:	;
 iptables/depend madwifi/depend rt2x00/depend: 	kernel/install
 uclibc/depend kernel/depend:		 	kernel-headers/install
 #dropbear/depend:				zlib/install
+
+
+%/patch-mod:	%/Makefile
+		$(MAKE) -C $* patch PKG_MODULE=y
+
+%/build-mod:	%/Makefile %/depend
+		$(MAKE) -C $* build PKG_MODULE=y
+
+%/install-mod:	%/Makefile %/depend
+		$(MAKE) -C $* install PKG_MODULE=y
+
+%/package-mod:	%/Makefile %/depend
+		$(MAKE) -C $* package PKG_MODULE=y
+
+%/clean-mod:	%/Makefile
+		$(MAKE) -C $* clean PKG_MODULE=y
+
+%/pkgclean-mod:	%/Makefile
+		$(MAKE) -C $* pkgclean PKG_MODULE=y
+
+%/distclean-mod:	%/Makefile
+		$(MAKE) -C $* distclean PKG_MODULE=y
+
+%/clobber-mod:	%/distclean-mod
+
+mod/fetch:		$(patsubst %,%/fetch,$(obj-m))
+mod/unpack:		$(patsubst %,%/unpack,$(obj-m))
+mod/patch:		$(patsubst %,%/patch-mod,$(obj-m))
+mod/build:		$(patsubst %,%/build-mod,$(obj-m))
+mod/package:		$(patsubst %,%/package-mod,$(obj-m))
+mod/install:		$(patsubst %,%/install-mod,$(obj-m))
+mod/clean:		$(patsubst %,%/clean-mod,$(obj-m))
+mod/pkgclean:		$(patsubst %,%/pkgclean-mod,$(obj-m))
+mod/distclean:		$(patsubst %,%/distclean-mod,$(obj-m))
+mod/clobber:		mod/distclean
