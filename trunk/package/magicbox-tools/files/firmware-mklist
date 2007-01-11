@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+if [ $# -ne 5 ]
+    then
+    echo "Usage: $0 name kernel ramdisk destination-path comment" >&2
+    exit 1
+fi
+
+echo "name $4/$2 $(md5sum $2 | awk '{print $1}') $4/$3 $(md5sum $3 | awk '{print $1}') $5"

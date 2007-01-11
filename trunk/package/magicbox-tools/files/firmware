@@ -1,0 +1,204 @@
+#!/bin/sh
+# Upgrade MagicBox firmware.
+# (C) Karol Lewandowski,  Sat, 11 Nov 2006 21:14:33 +0100
+# GPL2.
+
+BASE_URL="${BASE_URL:-ftp://magicbox.pl/magicbox/firmware}"
+
+set -e
+
+help()
+{
+    echo "Usage: $0 [--help | --list | --upgrade NAME] [--kernel-only | --ramdisk-only] [--fetch-only]"
+}
+
+get_list()
+{
+    cd $T
+    if ! wget -cq "$BASE_URL/firmware.list"
+	then
+	echo "Can't get firmware list from $BASE_URL/firmware.list" >&2
+	exit 1
+    fi
+}
+
+list()
+{
+    cd $T
+
+    get_list
+    echo "Available firmware:"
+    while read name kernel kernel_md5 ramdisk ramdisk_md5 comment
+      do
+      echo
+      echo " * $name: $comment"
+      echo "   kernel  $kernel_md5"
+      echo "   ramdisk $ramdisk_md5"
+    done <$T/firmware.list
+}
+
+set_upgrade_env()
+{
+    while read name kernel kernel_md5 ramdisk ramdisk_md5 comment
+      do
+      if [ "x$name" = "x$NAME" ]
+	  then
+	  KERNEL_URL="$BASE_URL/$kernel"
+	  RAMDISK_URL="$BASE_URL/$ramdisk"
+	  KERNEL_MD5="$kernel_md5"
+	  RAMDISK_MD5="$ramdisk_md5"
+	  break
+      fi
+    done <$T/firmware.list
+
+    if [ -z "$KERNEL_URL" -o -z "$RAMDISK_URL" -o -z "$KERNEL_MD5" -o -z "$RAMDISK_MD5" ]
+	then
+	echo "Firmware list corrupt!" >&2
+    fi
+}
+
+upgrade()
+{
+    if [ "x$NAME" = "x" ]
+	then
+	echo "Please use correct firmware name." >&2
+	exit 1
+    fi
+
+    cd $T
+    get_list
+    set_upgrade_env
+    if [ "x$RAMDISK_ONLY" != "xyes" ]
+	then
+	echo "Fetching kernel..."
+	if ! wget -cO kernel "$KERNEL_URL"
+	    then
+	    echo "Can't fetch kernel from $KERNEL_URL" >&2
+	    exit 1
+	fi
+	SUM="$(md5sum kernel | cut -d' ' -f1 2>/dev/null)"
+	if [ "x$KERNEL_MD5" != "x$SUM" ]
+	    then
+	    echo "Checking md5 sum for kernel failed." >&2
+	    echo "Expected: $KERNEL_MD5" >&2
+	    echo "Got:      $SUM" >&2
+	    echo "Exiting." >&2
+	    exit 1
+	fi
+
+	echo "Checking md5 sum for kernel succeeded."
+    fi
+
+    if [ "x$KERNEL_ONLY" != "xyes" ]
+	then
+	echo "Fetching ramdisk..."
+	if ! wget -cO ramdisk "$RAMDISK_URL"
+	    then
+	    echo "Can't fetch ramdisk from $RAMDISK_URL" >&2
+	    exit 1
+	fi
+	SUM="$(md5sum ramdisk | cut -d' ' -f1 2>/dev/null)"
+	if [ "x$RAMDISK_MD5" != "x$SUM" ]
+	    then
+	    echo "Checking md5 sum for ramdisk failed." >&2
+	    echo "Expected: $RAMDISK_MD5" >&2
+	    echo "Got:      $SUM" >&2
+	    echo "Exiting." >&2
+	    exit 1
+	fi
+	echo "Checking md5 sum for ramdisk succeeded."
+    fi
+
+    if [ "x$FETCH_ONLY" = "xyes" ]
+	then
+	trap '' 0 1 2 3 15
+	echo "Fetch directory is $T"
+	exit 0
+    fi
+
+    echo "Last chance to interrupt.  Waiting 10 seconds."
+    sleep 10
+
+    if [ "x$KERNEL_ONLY" != "xyes" ]
+	then
+	echo "Writing kernel to /dev/mtd0..."
+	flashcp -v kernel /dev/mtd0
+    fi
+
+    if [ "x$RAMDISK_ONLY" != "xyes" ]
+	then
+	echo "Writing ramdisk to /dev/mtd1..."
+	flashcp -v ramdisk /dev/mtd1
+    fi
+}
+
+cleanup()
+{
+    rm -rf $T
+}
+
+T="$(mktemp -d /tmp/firmware.XXXXXX)"
+
+trap cleanup 0 1 2 3 15
+
+while [ $# -gt 0 ]
+  do
+  ARG="$1"
+  shift
+
+  if [ "$ARG" = "--help" ]
+      then
+      help
+      exit 0
+  fi
+
+  if [ "$ARG" = "--list" ]
+      then
+      list
+      exit 0
+  fi
+
+  if [ "$ARG" = "--upgrade" ]
+      then
+      NAME="$1"
+      DO_UPGRADE=yes
+      shift
+      continue
+  fi
+
+  if [ "$ARG" = "--fetch-only" ]
+      then
+      FETCH_ONLY=yes
+      continue
+  fi
+
+  if [ "$ARG" = "--kernel-only" ]
+      then
+      KERNEL_ONLY=yes
+      continue
+  fi
+
+  if [ "$ARG" = "--ramdisk-only" ]
+      then
+      RAMDISK_ONLY=yes
+      continue
+  fi
+
+
+  help >&2
+  exit 1
+done
+
+if [ "x$KERNEL_ONLY" = "xyes" -a "x$RAMDISK_ONLY" = "xyes" ]
+    then
+    echo "Can't use --kernel-only with --ramdisk-only." >&2
+    exit 1
+fi
+
+if [ "x$DO_UPGRADE" = "xyes" ]
+    then
+    upgrade
+else
+    help >&2
+    exit 1
+fi

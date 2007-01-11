@@ -1,0 +1,26 @@
+#!/bin/sh
+# kl, Thu, 11 Jan 2007 16:46:52 +0100
+# Public Domain.
+
+set -e
+
+PATH=/bin:/sbin
+DESTDEV=/dev/mtd2
+
+LENGTH=$(wc -c < $DESTDEV)
+T=$(mktemp /tmp/persist.XXXXXX)
+
+cd /etc
+tar czf $T .
+
+L=$(wc -c <$T)
+if [ $L -gt $LENGTH ]
+then
+    echo "Compressed file ($T) exceeds available space ($L > $LENGTH)."
+    exit 1
+fi
+
+flashcp $T $DESTDEV
+rm -f $T || true
+
+exit 0

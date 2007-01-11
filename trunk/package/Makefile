@@ -20,6 +20,7 @@ obj-$(CONFIG_BUSYBOX)		+= busybox
 obj-$(CONFIG_BASE_FILES)	+= base-files
 obj-$(CONFIG_DEVICE_NODES)	+= device-nodes
 obj-$(CONFIG_MAGICBOX_INIT)	+= magicbox-init
+obj-$(CONFIG_MAGICBOX_TOOLS)	+= magicbox-tools
 obj-$(CONFIG_HOTPLUG)		+= hotplug
 obj-$(CONFIG_MTD_UTILS)		+= mtd-utils
 

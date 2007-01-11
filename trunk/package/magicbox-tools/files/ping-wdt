@@ -1,0 +1,71 @@
+#!/bin/sh
+# kl, Tue, 01 Aug 2006 16:09:42 +0200
+# Public Domain.
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+# Uncomment/set to reboot rather bring interface up/down
+#PINGWDT_REBOOT=yes
+
+# Execute following script instead of reboot/ifup/ifdown
+#PINGWDT_EXEC=/etc/myscript
+
+[ "$PINGWDT_COUNT" ] || PINGWDT_COUNT=5
+[ "$PINGWDT_MUST_PASS" ] || PINGWDT_MUST_PASS=5
+
+
+if [ $# -lt 3 ]
+    then
+    echo "usage: $0 INTERFACE TIMEOUT [ADDR ADDR ADDR...]"
+    exit 1
+fi
+
+INTERFACE="$1"
+TIMEOUT="$2"
+shift 2
+
+if ! ifconfig "$INTERFACE" >/dev/null 2>&1
+    then
+    echo "$0: no such interface $INTERFACE"
+    exit 1
+fi
+
+
+while sleep $TIMEOUT
+  do
+  
+  for ip in "$@"
+    do
+    
+    passed=0
+    for i in $(seq 1 $PINGWDT_COUNT)
+      do
+      if ping -c 1 "$ip" >/dev/null 2>&1
+	  then
+	  passed=$(($passed + 1))
+      fi
+    done
+
+    if [ "$passed" -lt "$PINGWDT_MUST_PASS" ]
+	then
+	hung=1
+	logger -t $0 "$ip is unreachable"&
+    fi
+  done
+
+  if [ "$hung" = "1" -a "$PINGWDT_EXEC" ]
+      then
+      logger -t $0 "executing $PINGWDT_EXEC $INTERFACE" &
+      $PINGWDT_EXEC $INTERFACE
+  elif [ "$hung" = "1" -a "$PINGWDT_REBOOT" != "yes" ]
+      then
+      logger -t $0 "bringing interface $INTERFACE down/up" &
+      ifconfig "$INTERFACE" down
+      sleep 1
+      ifconfig "$INTERFACE" up
+  elif [ "$hung" = "1" -a "$PINGWDT_REBOOT" = "yes" ]
+      then
+      logger -t $0 "rebootting..." &
+      sleep 1
+      /sbin/reboot
+  fi
+done

@@ -1,0 +1,22 @@
+#!/bin/sh
+# kl, Thu, 11 Jan 2007 18:25:19 +0100
+# Public Domain.
+
+MANPATH="/share/man /usr/share/man"
+MANPAGE="${1}.0.gz"
+
+PAGER=more
+[ -x /bin/less ] && PAGER=less
+
+if [ -z "$1" ]
+then
+    echo "What manual page do you want?"
+    exit 1
+fi
+
+for manpath in $MANPATH
+  do
+  test -r $manpath/$MANPAGE && zcat $manpath/$MANPAGE | $PAGER && exit 0
+done
+
+echo "No manual entry for $1"
