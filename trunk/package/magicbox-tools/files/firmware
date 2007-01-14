@@ -53,7 +53,8 @@ set_upgrade_env()
 
     if [ -z "$KERNEL_URL" -o -z "$RAMDISK_URL" -o -z "$KERNEL_MD5" -o -z "$RAMDISK_MD5" ]
 	then
-	echo "Firmware list corrupt!" >&2
+	echo "Firmware list corrupt or unknown identifier ($NAME).  Exiting." >&2
+	exit 1
     fi
 }
 
