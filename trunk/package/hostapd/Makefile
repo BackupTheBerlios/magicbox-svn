@@ -39,7 +39,6 @@ $(call InstallFile,$(PKG_WORKDIR)/hostapd.accept,etc,hostapd.accept.example,0644
 $(call InstallFile,$(PKG_WORKDIR)/hostapd.deny,etc,hostapd.deny.example,0644)
 $(call InstallFile,$(PKG_WORKDIR)/hostapd.wpa_psk,etc,hostapd.wpa_psk.example,0644)
 $(call InstallFile,$(PKG_FILES_DIR)/hostapd,etc/boot.d,hostapd,0755)
-#$(call InstallDir,var/run/hostapd)
 $(call InstallMan,$(PKG_WORKDIR)/hostapd.8,hostapd)
 $(call InstallMan,$(PKG_WORKDIR)/hostapd_cli.1,hostapd_cli)
 endef

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+REV=$(uname -r)
+test -d /usr/lib/modules/$REV/external && mount -o bind /usr/lib/modules/$REV/external /lib/modules/$REV/external

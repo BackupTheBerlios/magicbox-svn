@@ -43,6 +43,13 @@ $(MAKE) -C $(PKG_WORKDIR) $(KERNEL_ENV) INSTALL_MOD_PATH=$(PKG_TMP) modules_inst
 rm -f $(PKG_TMP)/lib/modules/*/modules.*
 rm -f $(PKG_TMP)/lib/modules/*/build
 rm -f $(PKG_TMP)/lib/modules/*/source
+$(SCRIPTS_DIR)/kernel-builtin-mod-split.sh $(PKG_TMP)/lib/modules/*/ $(PKG_FILES_DIR)/builtin-modules.list
+( mkdir -p $(PKG_TMP)/TMP/usr/lib/modules/`basename $(PKG_TMP)/lib/modules/*`/external && \
+  cd $(PKG_TMP)/TMP && \
+  cp -Rd $(PKG_TMP)/lib/modules/*/external/* ./usr/lib/modules/`basename $(PKG_TMP)/lib/modules/*`/external/ && \
+  $(FAKEROOT) tar czf $(OBJ_DIR)/kernel-mod.tgz ./usr && \
+  rm -rf ../TMP)
+$(call InstallFile,$(PKG_FILES_DIR)/kernel-mod,etc/boot.d,kernel-mod,0755)
 install -m644 $(PKG_WORKDIR)/arch/ppc/boot/images/uImage $(OBJ_DIR)/kernel
 endef
 
@@ -51,7 +58,7 @@ endef
 #endef
 
 define PackageDistclean
-rm -f $(KERNEL_VER_FILE) $(OBJ_DIR)/kernel
+rm -f $(KERNEL_VER_FILE) $(OBJ_DIR)/kernel $(OBJ_DIR)/kernel-mod.tgz
 endef
 
 include $(TOPDIR)/include/package.mk
