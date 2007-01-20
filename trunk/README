@@ -136,6 +136,15 @@ want to rebuild it.  Type following to do that:
   $ make package/PKGNAME/distclean
   $ make package/PKGNAME/package
 
+Please note that above command works for all packages, even those
+marked as =m (modules) in ./Config.  Compiling packages that way may
+produce weird results (module packages are compiled with different
+prefix -- /usr by default).  To compile given package as module
+without invoking make world, type:
+
+  $ make package/PKGNAME/distclean
+  $ make package/PKGNAME/package-mod
+
 If you have changed your configuration before creating new image you
 should do:
 
