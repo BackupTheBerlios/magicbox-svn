@@ -41,6 +41,7 @@ ifeq ($(CONFIG_KERNEL_FLAVOUR),2.6)
 		cd $(IMAGE_DIR) && /sbin/depmod -b . "`basename ./lib/modules/*`"
 		rm -f $(IMAGE_DIR)/lib/modules/*/modules.[b-ce-rt-z]*
 		rm -f $(IMAGE_DIR)/lib/modules/*/modules.seriomap*
+		rm -rf $(IMAGE_DIR)/lib/modules/*/external || true
 else
 		rm -f $(IMAGE_DIR)/lib/modules/*/modules.*
 endif
