@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
-# Linux kernel version: 2.6.18-magicbox2
-# Tue Jan 16 20:16:27 2007
+# Linux kernel version: 2.6.18-magicbox3
+# Wed Jan 31 15:04:44 2007
 #
 CONFIG_MMU=y
 CONFIG_GENERIC_HARDIRQS=y
@@ -640,7 +640,7 @@ CONFIG_IDE_GENERIC=y
 # CONFIG_BLK_DEV_IDEPCI is not set
 # CONFIG_IDE_ARM is not set
 CONFIG_BLK_DEV_MAGICBOX_IDE=y
-CONFIG_BLK_DEV_MAGICBOX_PROTOTYPE=y
+# CONFIG_BLK_DEV_MAGICBOX_PROTOTYPE is not set
 # CONFIG_BLK_DEV_IDEDMA is not set
 # CONFIG_IDEDMA_AUTO is not set
 # CONFIG_BLK_DEV_HD is not set

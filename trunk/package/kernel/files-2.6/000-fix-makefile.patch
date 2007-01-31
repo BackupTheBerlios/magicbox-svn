@@ -6,7 +6,7 @@ diff -ru linux-2.6.18/Makefile linux-2.6.18-magicbox/Makefile
  PATCHLEVEL = 6
  SUBLEVEL = 18
 -EXTRAVERSION = .6
-+EXTRAVERSION = -magicbox2
++EXTRAVERSION = -magicbox3
  NAME=Avast! A bilge rat!
  
  # *DOCUMENTATION*
