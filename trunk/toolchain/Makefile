@@ -69,4 +69,4 @@ all/clobber:		all/distclean
 toolchain:		all/install
 
 distclean:		all/distclean
-			rm -rf $(TOOLCHAIN_DIR)
+			rm -rf $(TOOLCHAIN_DIR)/*
