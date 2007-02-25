@@ -120,13 +120,13 @@ upgrade()
     echo "Last chance to interrupt.  Waiting 10 seconds."
     sleep 10
 
-    if [ "x$KERNEL_ONLY" != "xyes" ]
+    if [ "x$RAMDISK_ONLY" != "xyes" ]
 	then
 	echo "Writing kernel to /dev/mtd0..."
 	flashcp -v kernel /dev/mtd0
     fi
 
-    if [ "x$RAMDISK_ONLY" != "xyes" ]
+    if [ "x$KERNEL_ONLY" != "xyes" ]
 	then
 	echo "Writing ramdisk to /dev/mtd1..."
 	flashcp -v ramdisk /dev/mtd1
